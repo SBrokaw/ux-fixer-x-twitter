@@ -20,14 +20,14 @@
         "https://twitter.com/*"
       ],
       "css": ["styles/content.css"],
-      "js": ["scripts/content.js"],
+      "js": ["scripts/debug.js", "scripts/content.js"],
       "run_at": "document_end"
     }
   ],
   
   "web_accessible_resources": [
     {
-      "resources": ["styles/*"],
+      "resources": ["styles/*", "scripts/*"],
       "matches": [
         "https://x.com/*",
         "https://twitter.com/*"
