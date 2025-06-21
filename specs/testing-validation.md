@@ -1,538 +1,327 @@
 # Testing & Validation Specification
 
 ## Overview
-This specification defines the testing and validation procedures for the FirstTechFed UX Fixer extension, including manual testing, automated testing, and quality assurance processes.
 
-## Testing Strategy
+This specification defines the comprehensive testing and validation framework for the X.com UX Fixer Firefox extension, including automated debugging systems, manual testing procedures, and quality assurance standards.
 
-### 1. Manual Testing
-- **Functional testing**: Verify all transformations work correctly
-- **Visual testing**: Ensure UI changes match design specifications
-- **Cross-browser testing**: Test compatibility across Firefox versions
-- **Accessibility testing**: Verify WCAG compliance
+## Automated Debugging System
 
-### 2. Automated Testing
-- **Unit tests**: Test individual transformation functions
-- **Integration tests**: Test complete transformation workflows
-- **Performance tests**: Measure impact on page load and interaction
-- **Regression tests**: Ensure changes don't break existing functionality
+### Debug Panel Architecture
 
-### 3. User Acceptance Testing
-- **Real-world scenarios**: Test on actual FirstTechFed pages
-- **User feedback**: Collect feedback from actual users
-- **Edge cases**: Test with various page states and user interactions
+The extension includes an automated debugging system that provides real-time issue detection and reporting:
+
+#### Visual Debug Panel
+- **Location**: Top-right corner of the page
+- **Appearance**: Black background with yellow border, monospace font
+- **Content**: Issue count, categorized problem list, status indicators
+- **Auto-refresh**: Updates every 5 seconds
+- **Manual refresh**: Ctrl+Shift+D keyboard shortcut
+
+#### Issue Detection Categories
+1. **Text Overlap Issues**
+   - Elements with zero dimensions
+   - Text content overflow
+   - Element overlapping with other elements
+
+2. **Broken Buttons**
+   - Invisible or hidden buttons
+   - Buttons with no visible text
+   - Buttons positioned off-screen
+   - Buttons with zero dimensions
+
+3. **Layout Issues**
+   - Primary column too narrow
+   - Sidebar positioning problems
+   - Elements positioned off-screen
+
+4. **CSS Conflicts**
+   - Monospace font not applied
+   - Compact padding not applied
+   - Styles being overridden by X.com
+
+5. **Selector Failures**
+   - Missing elements for required selectors
+   - No elements found for key selectors
+
+### Debug Script Implementation
+
+```javascript
+// Core debug functionality
+const DEBUG = {
+  enabled: true,
+  logLevel: 'info',
+  autoRun: true,
+  interval: 5000
+};
+
+const ISSUES = {
+  textOverlap: [],
+  brokenButtons: [],
+  layoutIssues: [],
+  cssConflicts: [],
+  selectorFailures: []
+};
+
+// Main debug functions
+function runDebugChecks() { /* Run all checks */ }
+function checkTextOverlap() { /* Detect text issues */ }
+function checkBrokenButtons() { /* Detect button issues */ }
+function checkLayoutIssues() { /* Detect layout problems */ }
+function checkCSSConflicts() { /* Detect CSS overrides */ }
+function checkSelectorFailures() { /* Detect missing elements */ }
+```
 
 ## Manual Testing Procedures
 
 ### Installation Testing
-```javascript
-// Test extension installation
-describe('Extension Installation', () => {
-  test('Extension loads without errors', () => {
-    // Check console for errors
-    // Verify manifest.json is valid
-    // Confirm permissions are correct
-  });
-  
-  test('Extension activates on FirstTechFed pages', () => {
-    // Navigate to firsttechfed.com
-    // Verify content script loads
-    // Check for transformation indicators
-  });
-});
-```
+1. **Firefox Extension Loading**
+   - Navigate to `about:debugging`
+   - Click "This Firefox"
+   - Click "Load Temporary Add-on"
+   - Select `build/manifest.json`
+   - Verify extension loads without errors
 
-### Form Transformation Testing
-```javascript
-// Test form transformations
-describe('Form Transformations', () => {
-  test('Dropdown menus convert to radio buttons', () => {
-    // Find select elements
-    // Verify conversion to radio groups
-    // Check functionality preservation
-  });
-  
-  test('Checkboxes convert to toggle switches', () => {
-    // Find checkbox elements
-    // Verify conversion to toggles
-    // Test toggle functionality
-  });
-  
-  test('Input fields receive proper styling', () => {
-    // Check input classes applied
-    // Verify focus states
-    // Test validation messages
-  });
-});
-```
-
-### Navigation Transformation Testing
-```javascript
-// Test navigation transformations
-describe('Navigation Transformations', () => {
-  test('Hamburger menus expand to inline navigation', () => {
-    // Find hamburger menu elements
-    // Verify expansion to inline layout
-    // Test navigation functionality
-  });
-  
-  test('Dropdown menus convert to inline menus', () => {
-    // Find dropdown menu elements
-    // Verify conversion to inline layout
-    // Test menu item accessibility
-  });
-});
-```
+2. **Content Script Injection**
+   - Navigate to https://x.com/home
+   - Check console for "🔍 UX Fixer Debug Mode Enabled"
+   - Verify debug panel appears in top-right corner
+   - Confirm no console errors
 
 ### Visual Testing Checklist
-- [ ] Typography matches specification
-- [ ] Color scheme applied correctly
-- [ ] Spacing and layout are dense
-- [ ] No dropdown menus remain
-- [ ] No hamburger menus remain
-- [ ] All functionality preserved
-- [ ] Responsive design works
-- [ ] Focus indicators visible
-- [ ] Error states display correctly
 
-## Automated Testing Framework
+#### Feed Transformation
+- [ ] Feed is denser and more compact than original
+- [ ] Text uses monospace font (Monaco, Menlo, Ubuntu Mono)
+- [ ] Tweet spacing is reduced (8px 12px padding)
+- [ ] No excessive white space between elements
+- [ ] Content fills available width efficiently
 
-### Test Environment Setup
-```javascript
-// Test configuration
-const testConfig = {
-  baseUrl: 'https://firsttechfed.com',
-  testPages: [
-    '/login',
-    '/account-summary',
-    '/transfer-funds',
-    '/pay-bills',
-    '/settings'
-  ],
-  selectors: {
-    forms: 'form',
-    inputs: 'input, select, textarea',
-    navigation: 'nav, .nav',
-    dropdowns: 'select, .dropdown',
-    hamburgers: '.hamburger, .menu-toggle'
-  }
-};
+#### Navigation Elements
+- [ ] Sidebar is always visible on desktop (≥1024px)
+- [ ] Sidebar is fixed position (left: 0, width: 200px)
+- [ ] Navigation links have clear text labels
+- [ ] Active page is highlighted appropriately
+- [ ] Navigation is accessible and functional
+
+#### Action Buttons
+- [ ] Like, retweet, reply buttons are visible
+- [ ] Buttons have text labels ("Like", "Retweet", "Reply")
+- [ ] Buttons are properly sized and clickable
+- [ ] Button states are clear (active/inactive)
+- [ ] Buttons maintain functionality
+
+#### Typography
+- [ ] Tweet text uses monospace font
+- [ ] Usernames use monospace font
+- [ ] Timestamps use monospace font
+- [ ] Text is readable and properly sized
+- [ ] No text overlapping or overflow
+
+### Functional Testing Checklist
+
+#### Core Functionality
+- [ ] Like button works and shows active state
+- [ ] Retweet button works and shows active state
+- [ ] Reply button works and opens reply interface
+- [ ] Navigation links work and load correct pages
+- [ ] Scrolling is smooth and performant
+
+#### Extension Features
+- [ ] Debug panel updates automatically
+- [ ] Manual refresh (Ctrl+Shift+D) works
+- [ ] Console logging provides useful information
+- [ ] No memory leaks or performance issues
+- [ ] Extension doesn't crash or freeze
+
+### Performance Testing
+
+#### Load Time Impact
+- **Target**: Extension should add <100ms to page load time
+- **Measurement**: Compare load times with/without extension
+- **Tools**: Firefox Developer Tools Performance tab
+
+#### Scrolling Performance
+- **Target**: No lag when scrolling through feed
+- **Measurement**: Scroll through 50+ tweets smoothly
+- **Tools**: Visual observation, performance monitoring
+
+#### Memory Usage
+- **Target**: No significant memory increase
+- **Measurement**: Monitor memory usage over time
+- **Tools**: Firefox Task Manager, about:memory
+
+## Issue Resolution Process
+
+### 1. Issue Detection
+- **Automated**: Debug panel identifies problems
+- **Manual**: Visual inspection and functional testing
+- **Console**: Check for JavaScript errors
+
+### 2. Issue Documentation
+- Use `ISSUE_REPORT_TEMPLATE.md`
+- Include debug panel output
+- Document console errors
+- Provide steps to reproduce
+
+### 3. Root Cause Analysis
+- Identify why issue occurred
+- Check for CSS conflicts
+- Verify selector changes
+- Analyze framework updates
+
+### 4. Solution Implementation
+- Apply CSS fixes from testing guide
+- Update JavaScript if needed
+- Test solution thoroughly
+- Verify debug panel shows no issues
+
+### 5. Validation
+- Debug panel confirms issue resolved
+- Manual testing verifies fix
+- Performance impact assessed
+- Documentation updated
+
+## Common Issues and Solutions
+
+### Text Overlapping
+**Problem**: Text elements overlap or have zero dimensions
+**Solution**:
+```css
+[data-testid="tweetText"] {
+  overflow: visible !important;
+  white-space: normal !important;
+  word-wrap: break-word !important;
+  display: block !important;
+  min-height: 1em !important;
+}
 ```
 
-### Unit Tests
-```javascript
-// Unit tests for transformation functions
-describe('FormTransformer', () => {
-  let formTransformer;
-  
-  beforeEach(() => {
-    formTransformer = new FormTransformer();
-    document.body.innerHTML = '';
-  });
-  
-  test('converts dropdown to radio buttons', () => {
-    // Setup test HTML
-    document.body.innerHTML = `
-      <select name="test">
-        <option value="1">Option 1</option>
-        <option value="2">Option 2</option>
-      </select>
-    `;
-    
-    const select = document.querySelector('select');
-    formTransformer.convertDropdownToRadioButtons(select);
-    
-    // Verify conversion
-    expect(document.querySelector('select')).toBeNull();
-    expect(document.querySelector('.ux-fixer-radio-group')).toBeTruthy();
-    expect(document.querySelectorAll('input[type="radio"]')).toHaveLength(2);
-  });
-  
-  test('converts checkbox to toggle switch', () => {
-    // Setup test HTML
-    document.body.innerHTML = `
-      <input type="checkbox" name="test" value="1">
-    `;
-    
-    const checkbox = document.querySelector('input[type="checkbox"]');
-    formTransformer.convertCheckboxToToggle(checkbox);
-    
-    // Verify conversion
-    expect(document.querySelector('input[type="checkbox"]')).toBeNull();
-    expect(document.querySelector('.ux-fixer-toggle')).toBeTruthy();
-    expect(document.querySelector('.slider')).toBeTruthy();
-  });
-  
-  test('styles input fields correctly', () => {
-    // Setup test HTML
-    document.body.innerHTML = `
-      <input type="text" name="test">
-      <input type="email" name="email">
-      <input type="password" name="password">
-    `;
-    
-    const inputs = document.querySelectorAll('input');
-    inputs.forEach(input => formTransformer.styleInput(input));
-    
-    // Verify styling
-    inputs.forEach(input => {
-      expect(input.classList.contains('ux-fixer-input')).toBe(true);
-    });
-    
-    expect(inputs[1].classList.contains('ux-fixer-input-email')).toBe(true);
-    expect(inputs[2].classList.contains('ux-fixer-input-password')).toBe(true);
-  });
-});
+### Broken Buttons
+**Problem**: Action buttons are invisible or unclickable
+**Solution**:
+```css
+[data-testid="like"], [data-testid="retweet"], [data-testid="reply"] {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-width: 60px !important;
+  min-height: 32px !important;
+}
 ```
 
-### Integration Tests
-```javascript
-// Integration tests for complete workflows
-describe('Extension Integration', () => {
-  test('complete page transformation', async () => {
-    // Load test page
-    await page.goto(`${testConfig.baseUrl}/login`);
-    
-    // Wait for extension to load
-    await page.waitForSelector('.ux-fixer-form');
-    
-    // Verify transformations
-    expect(await page.$('.ux-fixer-form')).toBeTruthy();
-    expect(await page.$('select')).toBeFalsy(); // No dropdowns
-    expect(await page.$('.hamburger')).toBeFalsy(); // No hamburger menus
-    
-    // Test form functionality
-    await page.fill('input[name="username"]', 'testuser');
-    await page.fill('input[name="password"]', 'testpass');
-    await page.click('button[type="submit"]');
-    
-    // Verify form submission works
-    expect(page.url()).toContain('/dashboard');
-  });
-  
-  test('dynamic content transformation', async () => {
-    // Load page with dynamic content
-    await page.goto(`${testConfig.baseUrl}/account-summary`);
-    
-    // Trigger dynamic content load
-    await page.click('.load-more');
-    
-    // Wait for new content
-    await page.waitForSelector('.new-content');
-    
-    // Verify new content is transformed
-    expect(await page.$('.new-content .ux-fixer-table')).toBeTruthy();
-  });
-});
+### Layout Issues
+**Problem**: Feed is too narrow or sidebar is wrong size
+**Solution**:
+```css
+[data-testid="primaryColumn"] {
+  max-width: none !important;
+  width: calc(100% - 200px) !important;
+  margin-left: 200px !important;
+}
+
+[data-testid="sidebarColumn"] {
+  width: 200px !important;
+  position: fixed !important;
+  left: 0 !important;
+}
 ```
 
-### Performance Tests
-```javascript
-// Performance testing
-describe('Performance Impact', () => {
-  test('page load time impact', async () => {
-    // Measure load time without extension
-    const startTime = performance.now();
-    await page.goto(`${testConfig.baseUrl}/login`);
-    const loadTimeWithout = performance.now() - startTime;
-    
-    // Measure load time with extension
-    await page.reload();
-    const startTimeWith = performance.now();
-    await page.waitForSelector('.ux-fixer-form');
-    const loadTimeWith = performance.now() - startTimeWith;
-    
-    // Verify acceptable performance impact
-    const performanceImpact = loadTimeWith - loadTimeWithout;
-    expect(performanceImpact).toBeLessThan(1000); // Max 1 second impact
-  });
-  
-  test('memory usage', async () => {
-    // Get initial memory usage
-    const initialMemory = await page.evaluate(() => performance.memory.usedJSHeapSize);
-    
-    // Navigate through multiple pages
-    for (const pagePath of testConfig.testPages) {
-      await page.goto(`${testConfig.baseUrl}${pagePath}`);
-      await page.waitForTimeout(1000);
-    }
-    
-    // Get final memory usage
-    const finalMemory = await page.evaluate(() => performance.memory.usedJSHeapSize);
-    
-    // Verify no memory leaks
-    const memoryIncrease = finalMemory - initialMemory;
-    expect(memoryIncrease).toBeLessThan(10 * 1024 * 1024); // Max 10MB increase
-  });
-});
+### CSS Conflicts
+**Problem**: X.com styles override extension styles
+**Solution**:
+```css
+.ux-fixer-mono {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+}
+
+.ux-fixer-compact {
+  padding: 8px 12px !important;
+}
 ```
 
-## Accessibility Testing
+## Quality Assurance Standards
 
-### WCAG Compliance Testing
-```javascript
-// Accessibility tests
-describe('Accessibility Compliance', () => {
-  test('keyboard navigation', async () => {
-    await page.goto(`${testConfig.baseUrl}/login`);
-    
-    // Test tab navigation
-    await page.keyboard.press('Tab');
-    expect(await page.evaluate(() => document.activeElement.classList.contains('ux-fixer-input'))).toBe(true);
-    
-    // Test form submission with keyboard
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Enter');
-    
-    // Verify form validation works
-    expect(await page.$('.ux-fixer-error')).toBeTruthy();
-  });
-  
-  test('screen reader compatibility', async () => {
-    await page.goto(`${testConfig.baseUrl}/login`);
-    
-    // Check for proper ARIA labels
-    const inputs = await page.$$('input');
-    for (const input of inputs) {
-      const ariaLabel = await input.getAttribute('aria-label');
-      const ariaLabelledby = await input.getAttribute('aria-labelledby');
-      expect(ariaLabel || ariaLabelledby).toBeTruthy();
-    }
-    
-    // Check for error announcements
-    await page.fill('input[name="username"]', '');
-    await page.click('button[type="submit"]');
-    
-    const errorElement = await page.$('.ux-fixer-error');
-    const ariaLive = await errorElement.getAttribute('aria-live');
-    expect(ariaLive).toBe('polite');
-  });
-  
-  test('color contrast compliance', async () => {
-    await page.goto(`${testConfig.baseUrl}/login`);
-    
-    // Test text contrast ratios
-    const textElements = await page.$$('.ux-fixer-text-primary, .ux-fixer-text-secondary');
-    
-    for (const element of textElements) {
-      const color = await element.evaluate(el => {
-        const style = window.getComputedStyle(el);
-        return style.color;
-      });
-      
-      const backgroundColor = await element.evaluate(el => {
-        const style = window.getComputedStyle(el);
-        return style.backgroundColor;
-      });
-      
-      // Calculate contrast ratio (simplified)
-      const contrastRatio = calculateContrastRatio(color, backgroundColor);
-      expect(contrastRatio).toBeGreaterThan(4.5); // WCAG AA standard
-    }
-  });
-});
-```
+### Pre-Release Requirements
+1. **Debug Panel Shows No Issues** - All automated checks pass
+2. **Manual Testing Complete** - All checklists verified
+3. **Performance Validated** - No significant performance impact
+4. **Cross-browser Testing** - Works on different Firefox versions
+5. **Documentation Complete** - All guides and templates included
 
-## Cross-Browser Testing
+### Release Criteria
+- ✅ No critical issues detected by debug panel
+- ✅ All visual transformations working correctly
+- ✅ All functionality preserved and working
+- ✅ Performance impact <100ms
+- ✅ No console errors or warnings
+- ✅ Debug panel functioning properly
 
-### Firefox Version Compatibility
-```javascript
-// Cross-browser compatibility tests
-describe('Firefox Compatibility', () => {
-  const firefoxVersions = ['78', '88', '95', '100', 'latest'];
-  
-  for (const version of firefoxVersions) {
-    test(`Firefox ${version} compatibility`, async () => {
-      // Launch browser with specific version
-      const browser = await puppeteer.launch({
-        product: 'firefox',
-        firefoxVersion: version
-      });
-      
-      const page = await browser.newPage();
-      
-      try {
-        await page.goto(`${testConfig.baseUrl}/login`);
-        await page.waitForSelector('.ux-fixer-form');
-        
-        // Verify basic functionality
-        expect(await page.$('.ux-fixer-form')).toBeTruthy();
-        expect(await page.$('select')).toBeFalsy();
-        
-        // Test form interaction
-        await page.fill('input[name="username"]', 'testuser');
-        await page.fill('input[name="password"]', 'testpass');
-        await page.click('button[type="submit"]');
-        
-        // Verify form works
-        expect(page.url()).toContain('/dashboard');
-      } finally {
-        await browser.close();
-      }
-    });
-  }
-});
-```
+## Integration with Technical Feasibility
 
-## Error Handling Testing
+### Debug System for Feasibility Assessment
+The automated debugging system can assist with technical feasibility validation:
 
-### Error Recovery Testing
-```javascript
-// Error handling tests
-describe('Error Handling', () => {
-  test('graceful degradation on malformed HTML', async () => {
-    // Inject malformed HTML
-    await page.evaluate(() => {
-      document.body.innerHTML = '<form><input type="text" name="test"</form>';
-    });
-    
-    // Trigger transformation
-    await page.evaluate(() => {
-      const transformer = new FormTransformer();
-      transformer.transform();
-    });
-    
-    // Verify extension doesn't crash
-    expect(await page.evaluate(() => document.body.innerHTML)).toBeTruthy();
-  });
-  
-  test('handles missing elements gracefully', async () => {
-    await page.goto(`${testConfig.baseUrl}/login`);
-    
-    // Remove elements that extension expects
-    await page.evaluate(() => {
-      document.querySelector('form').remove();
-    });
-    
-    // Trigger transformation
-    await page.evaluate(() => {
-      const transformer = new FormTransformer();
-      transformer.transform();
-    });
-    
-    // Verify no errors thrown
-    const consoleErrors = await page.evaluate(() => {
-      return window.consoleErrors || [];
-    });
-    
-    expect(consoleErrors.length).toBe(0);
-  });
-});
-```
+#### CSP Detection
+- Monitor console for CSP violation errors
+- Check if Content Security Policy blocks modifications
+- Verify if extension scripts are being blocked
 
-## User Acceptance Testing
+#### Selector Validation
+- Automatically check if required selectors exist
+- Detect changes in X.com's DOM structure
+- Identify missing elements that prevent functionality
 
-### Real-World Scenario Testing
-```javascript
-// User acceptance tests
-describe('User Acceptance Testing', () => {
-  test('complete banking workflow', async () => {
-    // Login
-    await page.goto(`${testConfig.baseUrl}/login`);
-    await page.fill('input[name="username"]', 'testuser');
-    await page.fill('input[name="password"]', 'testpass');
-    await page.click('button[type="submit"]');
-    
-    // Navigate to transfer funds
-    await page.click('a[href="/transfer-funds"]');
-    await page.waitForSelector('.ux-fixer-form');
-    
-    // Fill transfer form
-    await page.selectOption('select[name="fromAccount"]', 'checking');
-    await page.fill('input[name="amount"]', '100.00');
-    await page.fill('input[name="toAccount"]', 'savings');
-    await page.click('button[type="submit"]');
-    
-    // Verify transfer completion
-    expect(page.url()).toContain('/transfer-confirmation');
-    expect(await page.$('.ux-fixer-alert-success')).toBeTruthy();
-  });
-  
-  test('form validation workflow', async () => {
-    await page.goto(`${testConfig.baseUrl}/pay-bills`);
-    
-    // Submit form without required fields
-    await page.click('button[type="submit"]');
-    
-    // Verify validation errors
-    const errors = await page.$$('.ux-fixer-error');
-    expect(errors.length).toBeGreaterThan(0);
-    
-    // Fill required fields
-    await page.fill('input[name="amount"]', '50.00');
-    await page.fill('input[name="accountNumber"]', '1234567890');
-    
-    // Submit again
-    await page.click('button[type="submit"]');
-    
-    // Verify success
-    expect(await page.$('.ux-fixer-error')).toBeFalsy();
-  });
-});
-```
+#### CSS Injection Testing
+- Verify if styles are being applied correctly
+- Detect if X.com CSS is overriding extension styles
+- Confirm modification persistence
 
-## Quality Assurance Checklist
+#### Framework Detection
+- Identify complex JavaScript frameworks
+- Detect dynamic content loading patterns
+- Assess modification difficulty
 
-### Pre-Release Testing
-- [ ] All unit tests pass
-- [ ] All integration tests pass
-- [ ] Performance impact is acceptable
-- [ ] Accessibility compliance verified
-- [ ] Cross-browser compatibility confirmed
-- [ ] Error handling tested
-- [ ] Real-world scenarios validated
-- [ ] Security review completed
-- [ ] Code review completed
-- [ ] Documentation updated
+### Feasibility Validation Integration
+Use debug panel output to complete validation tasks:
+- **03-csp-analysis.md** - Check for CSP violations
+- **04-framework-detection.md** - Analyze selector availability
+- **05-dom-structure-analysis.md** - Verify element detection
+- **06-modification-testing.md** - Test modification persistence
 
-### Post-Release Monitoring
-- [ ] User feedback collection
-- [ ] Error reporting monitoring
-- [ ] Performance metrics tracking
-- [ ] Usage analytics review
-- [ ] Bug report triage
-- [ ] Update planning
+## Testing Documentation
 
-## Continuous Integration
+### Required Files
+1. **TESTING_GUIDE.md** - Complete testing procedures and solutions
+2. **ISSUE_REPORT_TEMPLATE.md** - Standardized issue reporting format
+3. **scripts/debug.js** - Automated issue detection script
+4. **Console Commands** - Manual testing JavaScript snippets
 
-### Automated Testing Pipeline
-```yaml
-# GitHub Actions workflow
-name: Test Extension
+### Documentation Standards
+- Clear step-by-step instructions
+- Visual examples and screenshots
+- Common issues with specific solutions
+- Performance benchmarks and targets
+- Troubleshooting procedures
 
-on: [push, pull_request]
+## Continuous Testing
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v2
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16'
-    
-    - name: Install dependencies
-      run: npm install
-    
-    - name: Run unit tests
-      run: npm test
-    
-    - name: Run integration tests
-      run: npm run test:integration
-    
-    - name: Run accessibility tests
-      run: npm run test:a11y
-    
-    - name: Build extension
-      run: npm run build
-    
-    - name: Validate manifest
-      run: npm run validate:manifest
-```
+### Automated Monitoring
+- Debug panel runs continuously
+- Issues detected in real-time
+- Performance impact monitored
+- Error logging and reporting
 
----
+### Manual Validation
+- Regular visual inspections
+- Functional testing sessions
+- Performance benchmarking
+- Cross-browser compatibility checks
 
-*Next: Begin implementation of the extension based on these specifications* 
+### Quality Metrics
+- Issue detection rate
+- Resolution time
+- Performance impact
+- User satisfaction
+- Stability metrics
+
+This comprehensive testing framework ensures the X.com UX Fixer extension maintains high quality and reliability while providing automated tools to catch issues early and resolve them efficiently. 

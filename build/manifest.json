@@ -19,15 +19,15 @@
         "https://x.com/*",
         "https://twitter.com/*"
       ],
-      "css": ["styles/content.css"],
-      "js": ["scripts/debug.js", "scripts/content.js"],
+      "css": ["content.css"],
+      "js": ["debug.js", "content.js"],
       "run_at": "document_end"
     }
   ],
   
   "web_accessible_resources": [
     {
-      "resources": ["styles/*", "scripts/*"],
+      "resources": ["content.css", "debug.js", "content.js"],
       "matches": [
         "https://x.com/*",
         "https://twitter.com/*"
@@ -36,8 +36,8 @@
   ],
   
   "icons": {
-    "48": "icons/icon-48.png",
-    "96": "icons/icon-96.png"
+    "48": "icon-48.svg",
+    "96": "icon-96.svg"
   },
   
   "author": "UX Fixer Team",
