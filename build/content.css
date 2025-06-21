@@ -68,6 +68,7 @@
   contain: layout style paint;
   position: relative !important; /* Prevent overlap issues */
   z-index: 1 !important;
+  overflow: visible !important; /* Allow content to be visible */
 }
 
 /* Compact tweet layout - FIXED */
@@ -77,6 +78,7 @@
   gap: 8px !important;
   align-items: start !important;
   position: relative !important;
+  overflow: visible !important;
 }
 
 /* Remove excessive spacing */
@@ -84,6 +86,7 @@
   padding: 0 !important;
   margin: 0 !important;
   position: relative !important;
+  overflow: visible !important;
 }
 
 /* ==========================================================================
@@ -96,15 +99,17 @@
   line-height: 1.4 !important;
   color: var(--text-primary) !important;
   font-weight: 400 !important;
-  margin: 0 !important;
+  margin: 4px 0 8px 0 !important;
   padding: 0 !important;
   display: block !important;
   overflow: visible !important;
-  white-space: normal !important;
+  white-space: pre-wrap !important;
   word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
   min-height: 1em !important;
   position: relative !important;
   z-index: 2 !important;
+  max-width: 100% !important;
 }
 
 /* Username and metadata - FIXED */
@@ -113,11 +118,14 @@
   font-size: 13px !important;
   font-weight: 600 !important;
   color: var(--text-primary) !important;
-  margin: 0 !important;
+  margin: 0 0 2px 0 !important;
   padding: 0 !important;
   display: block !important;
   position: relative !important;
   z-index: 2 !important;
+  overflow: visible !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
 }
 
 /* Timestamps and secondary info - FIXED */
@@ -130,11 +138,13 @@ time, [data-testid="UserScreenName"] {
   display: inline-block !important;
   position: relative !important;
   z-index: 2 !important;
+  overflow: visible !important;
 }
 
-/* Fix for missing UserScreenName selector */
+/* Fix for missing UserScreenName selector - ADDED FALLBACKS */
 [data-testid="UserScreenName"], 
-span[dir="ltr"]:has(span[dir="ltr"] span[dir="ltr"]) {
+span[dir="ltr"]:has(span[dir="ltr"] span[dir="ltr"]),
+.css-1jxf684[dir="ltr"] {
   font-family: var(--font-mono) !important;
   font-size: 12px !important;
   color: var(--text-secondary) !important;
@@ -143,6 +153,7 @@ span[dir="ltr"]:has(span[dir="ltr"] span[dir="ltr"]) {
   display: inline-block !important;
   position: relative !important;
   z-index: 2 !important;
+  overflow: visible !important;
 }
 
 /* ==========================================================================
@@ -195,32 +206,31 @@ span[dir="ltr"]:has(span[dir="ltr"] span[dir="ltr"]) {
    Action Button Transformations - FIXED FOR BROKEN BUTTONS
    ========================================================================== */
 /* Compact action buttons - FIXED */
-[data-testid="like"], [data-testid="retweet"], [data-testid="reply"] {
+[data-testid="like"], [data-testid="retweet"], [data-testid="reply"], [data-testid="bookmark"], [data-testid="share"] {
   display: inline-flex !important;
   align-items: center !important;
+  justify-content: center !important;
   gap: 4px !important;
-  padding: 4px 8px !important;
-  border: 1px solid transparent !important;
+  padding: 8px 12px !important;
+  margin: 2px !important;
   border-radius: 4px !important;
+  border: 1px solid transparent !important;
   background: transparent !important;
-  color: var(--text-secondary) !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-  text-decoration: none !important;
-  font-family: var(--font-mono) !important;
-  margin: 0 4px 0 0 !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  min-width: 60px !important;
+  cursor: pointer !important;
   min-height: 32px !important;
+  min-width: 32px !important;
   position: relative !important;
   z-index: 3 !important;
+  overflow: visible !important;
+  font-family: var(--font-mono) !important;
+  font-size: 12px !important;
+  color: var(--text-secondary) !important;
 }
 
+/* Button hover states */
 [data-testid="like"]:hover, [data-testid="retweet"]:hover, [data-testid="reply"]:hover {
-  background: var(--background-secondary) !important;
-  border-color: var(--border-color) !important;
-  color: var(--text-primary) !important;
+  background: rgba(29, 161, 242, 0.1) !important;
+  color: var(--accent-color) !important;
 }
 
 /* Active states */
@@ -232,49 +242,71 @@ span[dir="ltr"]:has(span[dir="ltr"] span[dir="ltr"]) {
   color: var(--success-color) !important;
 }
 
-/* Fix for buttons with no visible text */
-[data-testid="like"]::after {
-  content: "Like" !important;
+/* Button text labels */
+.ux-fixer-button-label {
   margin-left: 4px !important;
-}
-
-[data-testid="retweet"]::after {
-  content: "Retweet" !important;
-  margin-left: 4px !important;
-}
-
-[data-testid="reply"]::after {
-  content: "Reply" !important;
-  margin-left: 4px !important;
+  font-size: 12px !important;
+  font-family: var(--font-mono) !important;
+  color: inherit !important;
+  display: inline-block !important;
+  position: relative !important;
+  z-index: 4 !important;
 }
 
 /* ==========================================================================
-   Content Prioritization
+   Additional Fixes for Debug Panel Issues
    ========================================================================== */
-/* Hide images by default, show on hover */
+/* Fix for compact padding conflicts */
+.ux-fixer-compact {
+  padding: 4px 8px !important;
+  margin: 2px !important;
+}
+
+/* Fix for monospace font conflicts */
+.ux-fixer-mono {
+  font-family: var(--font-mono) !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+}
+
+/* Fix for dense layout */
+.ux-fixer-dense {
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1.2 !important;
+}
+
+/* Fix for applied transformations */
+.ux-fixer-applied {
+  position: relative !important;
+  z-index: 1 !important;
+  overflow: visible !important;
+}
+
+/* ==========================================================================
+   Media and Image Transformations
+   ========================================================================== */
 [data-testid="tweetPhoto"] {
-  opacity: 0.3 !important;
-  transition: opacity 0.2s ease !important;
-  max-height: 200px !important;
+  max-width: 100% !important;
+  border-radius: 8px !important;
+  margin: 8px 0 !important;
 }
 
 [data-testid="tweetPhoto"]:hover {
-  opacity: 1 !important;
+  opacity: 0.9 !important;
 }
 
-/* Compact nested tweets */
+/* ==========================================================================
+   Hide Unnecessary Elements
+   ========================================================================== */
 [data-testid="tweet"] [data-testid="tweet"] {
-  margin-left: 20px !important;
-  border-left: 2px solid var(--border-color) !important;
-  padding-left: 12px !important;
+  display: none !important;
 }
 
-/* Hide decorative icons */
 [data-testid="tweet"] svg:not([aria-label]) {
   display: none !important;
 }
 
-/* Hide promoted content */
 [data-testid="promotedTweet"] {
   display: none !important;
 }
@@ -285,7 +317,6 @@ span[dir="ltr"]:has(span[dir="ltr"] span[dir="ltr"]) {
 @media (min-width: 1024px) {
   [data-testid="primaryColumn"] {
     margin-left: 200px !important;
-    width: calc(100% - 200px) !important;
   }
   
   [data-testid="sidebarColumn"] {
@@ -296,7 +327,6 @@ span[dir="ltr"]:has(span[dir="ltr"] span[dir="ltr"]) {
 @media (max-width: 1023px) and (min-width: 768px) {
   [data-testid="primaryColumn"] {
     margin-left: 0 !important;
-    width: 100% !important;
   }
   
   [data-testid="sidebarColumn"] {
@@ -307,20 +337,20 @@ span[dir="ltr"]:has(span[dir="ltr"] span[dir="ltr"]) {
 @media (max-width: 767px) {
   [data-testid="primaryColumn"] {
     margin-left: 0 !important;
-    width: 100% !important;
   }
   
   [data-testid="tweet"] {
-    padding: 6px 8px !important;
+    padding: 4px 8px !important;
   }
   
   [data-testid="tweetText"] {
     font-size: 13px !important;
+    line-height: 1.3 !important;
   }
 }
 
 /* ==========================================================================
-   Accessibility Enhancements
+   Accessibility and Focus Management
    ========================================================================== */
 [data-testid="tweet"]:focus,
 [data-testid="like"]:focus,
@@ -330,7 +360,7 @@ span[dir="ltr"]:has(span[dir="ltr"] span[dir="ltr"]) {
   outline-offset: 2px !important;
 }
 
-/* Skip links for keyboard navigation */
+/* Skip link for accessibility */
 .skip-link {
   position: absolute !important;
   top: -40px !important;
@@ -341,6 +371,7 @@ span[dir="ltr"]:has(span[dir="ltr"] span[dir="ltr"]) {
   text-decoration: none !important;
   border-radius: 4px !important;
   z-index: 10000 !important;
+  font-family: var(--font-mono) !important;
 }
 
 .skip-link:focus {
@@ -355,7 +386,7 @@ span[dir="ltr"]:has(span[dir="ltr"] span[dir="ltr"]) {
 }
 
 .ux-fixer-compact {
-  padding: 8px 12px !important;
+  padding: 4px 8px !important;
 }
 
 .ux-fixer-mono {

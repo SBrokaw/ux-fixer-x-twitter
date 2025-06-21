@@ -10,6 +10,7 @@ include: .cursor/rules/mdc-rules-standards.mdc
 # Code Quality Rules
 include: .cursor/rules/css-styling-standards.mdc
 include: .cursor/rules/testing-standards.mdc
+include: .cursor/rules/testing-framework.mdc
 include: .cursor/rules/documentation-standards.mdc
 
 # Project Management Rules

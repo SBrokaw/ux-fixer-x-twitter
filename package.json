@@ -1,0 +1,54 @@
+{
+  "name": "x-twitter-home-ux-fixer",
+  "version": "1.0.0",
+  "description": "Firefox extension to fix X.com UX with dense, text-based interface",
+  "main": "scripts/background.js",
+  "scripts": {
+    "build": "./build.sh",
+    "test": "npm run test:lint && npm run test:unit && npm run test:integration",
+    "test:lint": "web-ext lint",
+    "test:unit": "jest",
+    "test:integration": "playwright test",
+    "test:extension": "web-ext run --firefox=firefox --verbose",
+    "test:extension:nightly": "web-ext run --firefox=nightly --verbose",
+    "test:extension:headless": "web-ext run --no-reload --firefox=firefox",
+    "dev": "web-ext run --firefox=firefox --watch",
+    "dev:nightly": "web-ext run --firefox=nightly --watch",
+    "build:extension": "web-ext build",
+    "sign:extension": "web-ext sign",
+    "install:web-ext": "npm install -g web-ext",
+    "install:playwright": "npx playwright install firefox",
+    "ci:test": "npm run test:lint && npm run test:unit && npm run test:integration:ci",
+    "test:integration:ci": "playwright test --reporter=markdown"
+  },
+  "keywords": [
+    "firefox-extension",
+    "x-twitter",
+    "ux-fixer",
+    "content-script",
+    "css-transformation"
+  ],
+  "author": "X.com UX Fixer Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-junit": "^16.0.0",
+    "web-ext": "^7.8.0"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sbrokaw/x-twitter-home-ux-fixer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sbrokaw/x-twitter-home-ux-fixer/issues"
+  },
+  "homepage": "https://github.com/sbrokaw/x-twitter-home-ux-fixer#readme"
+} 

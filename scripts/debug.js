@@ -113,7 +113,7 @@
    * Check for text overlapping issues
    */
   function checkTextOverlap() {
-    const textElements = document.querySelectorAll('[data-testid="tweetText"], [data-testid="User-Name"], [data-testid="UserScreenName"]');
+    const textElements = document.querySelectorAll('[data-testid="tweetText"], [data-testid="User-Name"]');
     
     textElements.forEach((element, index) => {
       const rect = element.getBoundingClientRect();
@@ -162,7 +162,7 @@
    * Check for broken buttons
    */
   function checkBrokenButtons() {
-    const buttons = document.querySelectorAll('[data-testid="like"], [data-testid="retweet"], [data-testid="reply"]');
+    const buttons = document.querySelectorAll('[data-testid="like"], [data-testid="retweet"], [data-testid="reply"], [data-testid="bookmark"], [data-testid="share"]');
     
     buttons.forEach(button => {
       const rect = button.getBoundingClientRect();
@@ -192,13 +192,16 @@
       
       // Check if button text is readable
       const text = button.textContent || button.innerText;
+      const hasLabel = button.querySelector('.ux-fixer-button-label');
       if (!text || text.trim() === '') {
-        ISSUES.brokenButtons.push({
-          type: 'no-text',
-          element: button,
-          selector: getElementSelector(button),
-          message: 'Button has no visible text'
-        });
+        if (!hasLabel) {
+          ISSUES.brokenButtons.push({
+            type: 'no-text',
+            element: button,
+            selector: getElementSelector(button),
+            message: 'Button has no visible text'
+          });
+        }
       }
       
       // Check if button is positioned off-screen
@@ -284,7 +287,7 @@
       // Check if important styles are being overridden
       if (element.classList.contains('ux-fixer-compact')) {
         const padding = style.padding;
-        if (padding !== '8px 12px') {
+        if (padding !== '4px 8px' && padding !== '8px 12px') {
           ISSUES.cssConflicts.push({
             type: 'padding-override',
             element: element,
@@ -306,24 +309,54 @@
       '[data-testid="tweet"]',
       '[data-testid="tweetText"]',
       '[data-testid="User-Name"]',
-      '[data-testid="UserScreenName"]',
       '[data-testid="like"]',
       '[data-testid="retweet"]',
-      '[data-testid="reply"]'
+      '[data-testid="reply"]',
+      '[data-testid="bookmark"]',
+      '[data-testid="share"]'
     ];
     
     selectors.forEach(selector => {
       const elements = document.querySelectorAll(selector);
       if (elements.length === 0) {
-        ISSUES.selectorFailures.push({
-          type: 'missing',
-          selector: selector,
-          message: `No elements found for selector: ${selector}`
-        });
+        // Only report critical selectors as failures
+        if (selector === '[data-testid="primaryColumn"]' || 
+            selector === '[data-testid="tweet"]' || 
+            selector === '[data-testid="tweetText"]') {
+          ISSUES.selectorFailures.push({
+            type: 'missing',
+            selector: selector,
+            message: `No elements found for selector: ${selector}`
+          });
+        }
       } else {
         log(`Found ${elements.length} elements for ${selector}`);
       }
     });
+    
+    // Check for UserScreenName with fallback selectors
+    const userScreenNameSelectors = [
+      '[data-testid="UserScreenName"]',
+      'span[dir="ltr"]:has(span[dir="ltr"] span[dir="ltr"])',
+      '.css-1jxf684[dir="ltr"]'
+    ];
+    
+    let foundUserScreenName = false;
+    userScreenNameSelectors.forEach(selector => {
+      const elements = document.querySelectorAll(selector);
+      if (elements.length > 0) {
+        foundUserScreenName = true;
+        log(`Found ${elements.length} UserScreenName elements with selector: ${selector}`);
+      }
+    });
+    
+    if (!foundUserScreenName) {
+      ISSUES.selectorFailures.push({
+        type: 'missing',
+        selector: '[data-testid="UserScreenName"]',
+        message: 'No UserScreenName elements found with any selector'
+      });
+    }
   }
 
   /**

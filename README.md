@@ -37,6 +37,7 @@ Transform the X.com home feed from a visually cluttered, low-density interface i
 x-twitter-home/
 ├── SPECS.md                           # Main specifications overview
 ├── README.md                          # This file
+├── package.json                       # Dependencies and scripts
 ├── specs/                             # Detailed specifications
 │   ├── technical-architecture.md      # Technical implementation details
 │   ├── content-consumption-patterns.md # Content consumption design patterns
@@ -45,18 +46,60 @@ x-twitter-home/
 │   ├── css-styling-strategy.md        # CSS styling approach
 │   ├── content-script-implementation.md # Content script details
 │   └── testing-validation.md          # Testing and validation procedures
+├── tests/                             # Automated testing
+│   ├── extension.spec.js              # Integration tests
+│   ├── content-script.test.js         # Unit tests
+│   └── setup.js                       # Test configuration
+├── docs/                              # Documentation
+│   ├── testing-framework.md           # Comprehensive testing guide
+│   ├── quick-start-testing.md         # Quick start for testing
+│   └── ...                            # Other documentation
 ├── references/                        # Reference materials
 │   └── (2) Home _ X.html             # X.com home page reference
-└── tasks/                            # Task management (future)
+└── tasks/                            # Task management
     ├── ai/                           # AI task planning
     └── human/                        # Human task organization
 ```
+
+## 🧪 Automated Testing
+
+This project includes a comprehensive automated testing framework:
+
+### Test Types
+- **Unit Tests**: Jest-based tests for individual functions and components
+- **Integration Tests**: Playwright-based end-to-end browser testing
+- **Extension Tests**: web-ext-based Firefox extension validation
+- **Linting**: Extension structure and manifest validation
+
+### Quick Start Testing
+```bash
+# Install dependencies
+npm install
+
+# Run all tests
+npm test
+
+# Development with auto-reload
+npm run dev
+
+# Test extension in Firefox
+npm run test:extension
+```
+
+### CI/CD Pipeline
+- **GitHub Actions**: Automated testing on every push and pull request
+- **Matrix Testing**: Tests across Node.js 18.x/20.x and Firefox/Firefox Nightly
+- **Comprehensive Reporting**: HTML, JSON, and Markdown test reports
+- **Artifact Upload**: Test results and extension builds
+
+📖 **Testing Documentation**: [Quick Start Guide](docs/quick-start-testing.md) | [Full Framework Guide](docs/testing-framework.md)
 
 ## 🛠️ Development Phases
 
 ### Phase 1: Foundation ✅
 - [x] Technical architecture specification
 - [x] Firefox extension structure
+- [x] Automated testing framework
 - [ ] Basic manifest.json setup
 - [ ] X.com DOM structure analysis
 
@@ -72,8 +115,8 @@ x-twitter-home/
 - [ ] Navigation optimization
 
 ### Phase 4: Testing & Refinement
-- [ ] Testing specification
-- [ ] Validation procedures
+- [x] Testing specification
+- [x] Validation procedures
 - [ ] Performance optimization
 - [ ] User experience validation
 
@@ -102,6 +145,12 @@ This project applies the same density-first, text-based design principles that m
 - **Permission Minimal**: Only necessary permissions
 - **Performance Focused**: Lightweight and fast
 
+### Testing Strategy
+- **Comprehensive Coverage**: Unit, integration, and extension testing
+- **Automated Validation**: CI/CD pipeline with multiple browser versions
+- **Performance Monitoring**: Automated performance regression testing
+- **Quality Assurance**: Linting, validation, and error handling
+
 ## 📊 Success Metrics
 
 ### User Experience
@@ -116,24 +165,38 @@ This project applies the same density-first, text-based design principles that m
 - **Memory Usage**: Reduced memory consumption
 - **Network Requests**: Minimized additional resource loading
 
+### Testing Quality
+- **Test Coverage**: >90% code coverage
+- **CI/CD Reliability**: <1% false positive test failures
+- **Performance Testing**: Automated performance regression detection
+- **Cross-browser Compatibility**: Firefox and Firefox Nightly validation
+
 ## 🚦 Getting Started
 
 ### Prerequisites
+- Node.js 18+ and npm
 - Firefox browser
 - Basic knowledge of CSS and JavaScript
 - Understanding of Firefox extension development
 
 ### Development Setup
 1. Clone this repository
-2. Review the specifications in `/specs/`
-3. Set up Firefox extension development environment
-4. Begin with Phase 1 implementation
+2. Install dependencies: `npm install`
+3. Review the specifications in `/specs/`
+4. Set up testing framework: `npm run install:web-ext && npm run install:playwright`
+5. Begin with Phase 1 implementation
 
 ### Testing
-- Test on x.com/home feed
-- Validate across different screen sizes
-- Verify accessibility compliance
-- Measure performance improvements
+```bash
+# Run all tests
+npm test
+
+# Test extension in Firefox
+npm run test:extension
+
+# Development with auto-reload
+npm run dev
+```
 
 ## 📚 References
 
@@ -146,15 +209,32 @@ This project applies the same density-first, text-based design principles that m
 - [Firefox Extension Development](https://extensionworkshop.com/)
 - [CSS Performance Best Practices](https://developer.mozilla.org/en-US/docs/Learn/Performance/CSS)
 - [Web Accessibility Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
+- [web-ext Documentation](https://github.com/mozilla/web-ext)
+- [Playwright Testing](https://playwright.dev/)
 
 ## 🤝 Contributing
 
-This project follows a specification-driven development approach:
+This project follows a specification-driven development approach with comprehensive testing:
 
 1. **Review Specifications**: Understand the design goals and technical requirements
 2. **Follow Phases**: Work through the development phases systematically
-3. **Test Thoroughly**: Validate changes against success metrics
+3. **Test Thoroughly**: Run the automated test suite and validate changes
 4. **Document Changes**: Update specifications as implementation progresses
+5. **Quality Assurance**: Ensure all tests pass before submitting changes
+
+### Development Workflow
+```bash
+# Make changes
+# Run tests
+npm test
+
+# If tests pass, commit changes
+git add .
+git commit -m "Description of changes"
+
+# Push and let CI/CD validate
+git push
+```
 
 ## 📄 License
 

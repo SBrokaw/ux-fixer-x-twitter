@@ -5,13 +5,19 @@
   "description": "Transform X.com into a dense, efficient, text-based interface optimized for rapid content consumption",
   
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "scripting",
+    "tabs"
   ],
   
   "host_permissions": [
     "https://x.com/*",
     "https://twitter.com/*"
   ],
+  
+  "background": {
+    "scripts": ["scripts/background.js"]
+  },
   
   "content_scripts": [
     {
@@ -21,7 +27,9 @@
       ],
       "css": ["styles/content.css"],
       "js": ["scripts/debug.js", "scripts/content.js"],
-      "run_at": "document_end"
+      "run_at": "document_end",
+      "all_frames": false,
+      "match_about_blank": false
     }
   ],
   
@@ -34,6 +42,10 @@
       ]
     }
   ],
+  
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
   
   "icons": {
     "48": "icons/icon-48.png",

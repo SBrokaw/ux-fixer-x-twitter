@@ -19,14 +19,20 @@
       retweetButton: '[data-testid="retweet"]',
       replyButton: '[data-testid="reply"]',
       appTabBar: '[data-testid="AppTabBar"]',
-      promotedTweet: '[data-testid="promotedTweet"]'
+      promotedTweet: '[data-testid="promotedTweet"]',
+      // Additional selectors for better coverage
+      userAvatar: '[data-testid="Tweet-User-Avatar"]',
+      bookmarkButton: '[data-testid="bookmark"]',
+      shareButton: '[data-testid="share"]',
+      moreButton: '[data-testid="caret"]'
     },
     classes: {
       uxFixerApplied: 'ux-fixer-applied',
       uxFixerHidden: 'ux-fixer-hidden',
       uxFixerCompact: 'ux-fixer-compact',
       uxFixerMono: 'ux-fixer-mono',
-      uxFixerHighContrast: 'ux-fixer-high-contrast'
+      uxFixerHighContrast: 'ux-fixer-high-contrast',
+      uxFixerDense: 'ux-fixer-dense'
     },
     performance: {
       observerThrottle: 100,
@@ -39,7 +45,8 @@
     isApplied: false,
     observerActive: false,
     performanceMode: false,
-    debugMode: false
+    debugMode: false,
+    debugPanel: null
   };
 
   /**
@@ -66,8 +73,80 @@
     // Add performance monitoring
     setupPerformanceMonitoring();
     
+    // Initialize debug integration
+    initDebugIntegration();
+    
+    // Notify background script
+    notifyBackgroundScript();
+    
     state.isApplied = true;
     log('X.com UX Fixer initialized successfully');
+  }
+
+  /**
+   * Notify background script of successful initialization
+   */
+  function notifyBackgroundScript() {
+    try {
+      if (typeof browser !== 'undefined' && browser.runtime) {
+        browser.runtime.sendMessage({
+          type: 'DEBUG_INFO',
+          data: {
+            status: 'initialized',
+            url: window.location.href,
+            timestamp: Date.now()
+          }
+        });
+      }
+    } catch (error) {
+      log('Failed to notify background script:', error);
+    }
+  }
+
+  /**
+   * Initialize debug panel integration
+   */
+  function initDebugIntegration() {
+    // Wait for debug panel to be available
+    const checkDebugPanel = () => {
+      const debugPanel = document.getElementById('ux-fixer-debug-panel');
+      if (debugPanel) {
+        state.debugPanel = debugPanel;
+        log('Debug panel integration initialized');
+        
+        // Add our own debug info to the panel
+        addDebugInfo();
+      } else {
+        setTimeout(checkDebugPanel, 1000);
+      }
+    };
+    
+    checkDebugPanel();
+  }
+
+  /**
+   * Add debug information to the debug panel
+   */
+  function addDebugInfo() {
+    if (!state.debugPanel) return;
+    
+    const debugContent = document.getElementById('debug-content');
+    if (!debugContent) return;
+    
+    // Add our extension status
+    const extensionStatus = document.createElement('div');
+    extensionStatus.style.cssText = 'margin-top: 10px; padding: 5px; background: #333; border-radius: 3px;';
+    extensionStatus.innerHTML = `
+      <div style="color: #6bff6b; font-weight: bold;">UX Fixer Status</div>
+      <div style="color: #ffa; font-size: 10px;">
+        Applied: ${state.isApplied ? 'Yes' : 'No'}<br>
+        Performance Mode: ${state.performanceMode ? 'On' : 'Off'}<br>
+        Tweets Transformed: ${document.querySelectorAll(CONFIG.selectors.tweets).length}<br>
+        Buttons Transformed: ${document.querySelectorAll(`${CONFIG.selectors.likeButton}, ${CONFIG.selectors.retweetButton}, ${CONFIG.selectors.replyButton}`).length}
+      </div>
+    `;
+    
+    debugContent.appendChild(extensionStatus);
   }
 
   /**
@@ -86,6 +165,11 @@
     // Add skip links for accessibility
     addSkipLinks();
     
+    // Update debug panel
+    if (state.debugPanel) {
+      addDebugInfo();
+    }
+    
     log('Transformations applied');
   }
 
@@ -94,13 +178,18 @@
    */
   function transformFeedContainer() {
     const primaryColumn = document.querySelector(CONFIG.selectors.primaryColumn);
-    if (!primaryColumn) return;
+    if (!primaryColumn) {
+      log('Primary column not found');
+      return;
+    }
     
-    primaryColumn.classList.add(CONFIG.classes.uxFixerApplied);
+    primaryColumn.classList.add(CONFIG.classes.uxFixerApplied, CONFIG.classes.uxFixerDense);
     
-    // Ensure full width
+    // Ensure full width and proper spacing
     primaryColumn.style.maxWidth = 'none';
     primaryColumn.style.width = '100%';
+    primaryColumn.style.padding = '0';
+    primaryColumn.style.margin = '0';
     
     log('Feed container transformed');
   }
@@ -120,12 +209,18 @@
       const textElements = tweet.querySelectorAll(CONFIG.selectors.tweetText);
       textElements.forEach(element => {
         element.classList.add(CONFIG.classes.uxFixerMono);
+        // Ensure proper text wrapping
+        element.style.whiteSpace = 'pre-wrap';
+        element.style.wordWrap = 'break-word';
+        element.style.overflowWrap = 'break-word';
       });
       
       // Transform user names
       const userNames = tweet.querySelectorAll(CONFIG.selectors.userName);
       userNames.forEach(element => {
         element.classList.add(CONFIG.classes.uxFixerMono);
+        // Ensure proper spacing
+        element.style.marginBottom = '2px';
       });
       
       // Transform screen names and timestamps
@@ -133,7 +228,16 @@
       const timestamps = tweet.querySelectorAll('time');
       [...screenNames, ...timestamps].forEach(element => {
         element.classList.add(CONFIG.classes.uxFixerMono);
+        element.style.fontSize = '12px';
+        element.style.color = '#536471';
       });
+      
+      // Ensure proper spacing between elements
+      const tweetContent = tweet.querySelector('[data-testid="tweetText"]');
+      if (tweetContent) {
+        tweetContent.style.marginTop = '4px';
+        tweetContent.style.marginBottom = '8px';
+      }
     });
     
     log(`Transformed ${tweets.length} tweets`);
@@ -144,7 +248,10 @@
    */
   function transformNavigation() {
     const sidebar = document.querySelector(CONFIG.selectors.sidebarColumn);
-    if (!sidebar) return;
+    if (!sidebar) {
+      log('Sidebar not found');
+      return;
+    }
     
     sidebar.classList.add(CONFIG.classes.uxFixerApplied);
     
@@ -156,6 +263,8 @@
       sidebar.style.height = '100vh';
       sidebar.style.width = '200px';
       sidebar.style.zIndex = '1000';
+      sidebar.style.backgroundColor = '#ffffff';
+      sidebar.style.borderRight = '1px solid #e1e8ed';
     }
     
     log('Navigation transformed');
@@ -165,11 +274,15 @@
    * Transform action buttons
    */
   function transformActionButtons() {
-    const buttons = document.querySelectorAll([
+    const buttonSelectors = [
       CONFIG.selectors.likeButton,
       CONFIG.selectors.retweetButton,
-      CONFIG.selectors.replyButton
-    ].join(','));
+      CONFIG.selectors.replyButton,
+      CONFIG.selectors.bookmarkButton,
+      CONFIG.selectors.shareButton
+    ].join(',');
+    
+    const buttons = document.querySelectorAll(buttonSelectors);
     
     buttons.forEach(button => {
       if (button.classList.contains(CONFIG.classes.uxFixerApplied)) return;
@@ -178,6 +291,21 @@
       
       // Add text labels if missing
       addButtonLabels(button);
+      
+      // Ensure proper button styling
+      button.style.padding = '8px 12px';
+      button.style.margin = '2px';
+      button.style.borderRadius = '4px';
+      button.style.border = '1px solid transparent';
+      button.style.backgroundColor = 'transparent';
+      button.style.cursor = 'pointer';
+      
+      // Ensure button is visible and clickable
+      button.style.display = 'inline-flex';
+      button.style.alignItems = 'center';
+      button.style.justifyContent = 'center';
+      button.style.minHeight = '32px';
+      button.style.minWidth = '32px';
     });
     
     log(`Transformed ${buttons.length} action buttons`);
@@ -200,14 +328,31 @@
       case 'reply':
         label = 'Reply';
         break;
+      case 'bookmark':
+        label = 'Bookmark';
+        break;
+      case 'share':
+        label = 'Share';
+        break;
+      default:
+        return; // Don't add label for unknown buttons
     }
     
-    if (label && !button.textContent.includes(label)) {
-      const span = document.createElement('span');
-      span.textContent = label;
-      span.style.marginLeft = '4px';
-      button.appendChild(span);
-    }
+    // Check if label already exists
+    const existingLabel = button.querySelector('.ux-fixer-button-label');
+    if (existingLabel) return;
+    
+    const span = document.createElement('span');
+    span.textContent = label;
+    span.className = 'ux-fixer-button-label';
+    span.style.cssText = `
+      margin-left: 4px;
+      font-size: 12px;
+      font-family: monospace;
+      color: inherit;
+    `;
+    
+    button.appendChild(span);
   }
 
   /**
