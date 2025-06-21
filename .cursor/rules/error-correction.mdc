@@ -199,113 +199,455 @@ alwaysApply: false
 ```
 
 
+## MDC Rules Validation Framework
+
+### Critical Error: Missing YAML Frontmatter
+
+**Error Pattern:**
+- MDC rule files without YAML frontmatter
+- Files starting directly with markdown content
+- Missing required metadata fields
+
+**Root Cause:**
+- Creating MDC files without following the established format
+- Not validating file structure before committing
+- Incomplete file creation process
+
+**Prevention Rules:**
+
+#### Rule 1: YAML Frontmatter Validation
+```yaml
+---
+description: YAML Frontmatter Validation for MDC Rules
+globs:
+  - ".cursor/rules/**/*.mdc"
+ruleType: Always
+---
+
+# YAML Frontmatter Validation
+
+## Required Fields Check
+Every MDC rule file MUST have these fields in YAML frontmatter:
+
+```yaml
+---
+description: [Clear description of what the rule does]
+globs: [Array of file patterns this rule applies to]
+ruleType: [Always | Auto Attached | Agent Requested | Manual]
+---
+```
+
+## Validation Checklist
+- [ ] File starts with `---` on first line
+- [ ] `description` field is present and descriptive
+- [ ] `globs` field is present (array format)
+- [ ] `ruleType` field is present with valid value
+- [ ] File ends with `---` after YAML
+- [ ] No content before first `---`
+- [ ] No content between YAML and markdown
+
+## Error Detection
+```bash
+# Check for missing frontmatter
+grep -L "^---" .cursor/rules/*.mdc
+
+# Check for incomplete frontmatter
+grep -L "description:" .cursor/rules/*.mdc
+grep -L "globs:" .cursor/rules/*.mdc
+grep -L "ruleType:" .cursor/rules/*.mdc
+```
+```
+
+#### Rule 2: MDC File Creation Protocol
+```yaml
+---
+description: MDC File Creation Protocol
+globs:
+  - ".cursor/rules/**/*.mdc"
+ruleType: Always
+---
+
+# MDC File Creation Protocol
+
+## Creation Steps (MUST follow in order)
+1. **Create file with YAML frontmatter first**
+2. **Validate frontmatter syntax**
+3. **Add markdown content**
+4. **Test file structure**
+5. **Commit with validation**
+
+## Template for New MDC Files
+```yaml
+---
+description: [DESCRIPTION]
+globs:
+  - "[GLOB_PATTERN]"
+ruleType: [Always | Auto Attached | Agent Requested | Manual]
+---
+
+# [Title]
+
+## [Content starts here]
+```
+
+## Validation Commands
+```bash
+# Validate YAML syntax
+yamllint .cursor/rules/*.mdc
+
+# Check file structure
+head -10 .cursor/rules/*.mdc | grep -E "^(---|description:|globs:|ruleType:)"
+```
+```
+
+### Critical Error: Missing Essential Rules
+
+**Error Pattern:**
+- Project has incomplete rule coverage
+- Missing rules for major file types
+- No rules for critical development areas
+
+**Root Cause:**
+- Not analyzing project structure comprehensively
+- Creating rules reactively instead of proactively
+- Missing systematic rule coverage analysis
+
+**Prevention Rules:**
+
+#### Rule 3: Project Rule Coverage Analysis
+```yaml
+---
+description: Project Rule Coverage Analysis
+globs:
+  - "**/*"
+ruleType: Always
+---
+
+# Project Rule Coverage Analysis
+
+## Required Rule Categories
+Every project MUST have rules for:
+
+### 1. Development Standards
+- [ ] Git workflow and commit standards
+- [ ] Code quality and linting
+- [ ] Testing standards
+- [ ] Documentation standards
+
+### 2. Technology-Specific Rules
+- [ ] Language-specific standards (JS, CSS, HTML, etc.)
+- [ ] Framework-specific patterns
+- [ ] Platform-specific requirements (Firefox Extension, etc.)
+
+### 3. Project-Specific Rules
+- [ ] Architecture patterns
+- [ ] File organization
+- [ ] Naming conventions
+- [ ] Security requirements
+
+## Coverage Analysis Process
+1. **Scan project structure** for all file types
+2. **Identify missing rule categories**
+3. **Create comprehensive rule set**
+4. **Validate rule coverage**
+5. **Document rule dependencies**
+
+## File Type Coverage Matrix
+```
+File Type          | Rule Status | Rule File
+-------------------|-------------|------------------
+*.js               | [ ]         | javascript-standards.mdc
+*.css              | [ ]         | css-styling-standards.mdc
+*.json             | [ ]         | configuration-standards.mdc
+*.md               | [ ]         | documentation-standards.mdc
+manifest.json      | [ ]         | firefox-extension-development.mdc
+tests/**/*         | [ ]         | testing-standards.mdc
+```
+
+## Validation Commands
+```bash
+# Check rule coverage
+find . -type f -name "*.js" -o -name "*.css" -o -name "*.json" | head -10
+ls .cursor/rules/*.mdc | wc -l
+```
+```
+
+#### Rule 4: Rule Dependency Management
+```yaml
+---
+description: Rule Dependency Management
+globs:
+  - ".cursor/rules/**/*.mdc"
+ruleType: Always
+---
+
+# Rule Dependency Management
+
+## Rule Hierarchy
+1. **Foundation Rules** (Always apply)
+   - mdc-rules-standards.mdc
+   - git-workflow.mdc
+   - project-standards.mdc
+
+2. **Technology Rules** (Auto attached)
+   - language-specific rules
+   - framework-specific rules
+   - platform-specific rules
+
+3. **Project Rules** (Auto attached)
+   - architecture rules
+   - file organization rules
+   - naming convention rules
+
+## Dependency Validation
+- [ ] All foundation rules exist
+- [ ] Technology rules cover all file types
+- [ ] Project rules align with architecture
+- [ ] No circular dependencies
+- [ ] Rule descriptions are clear
+
+## Missing Rule Detection
+```bash
+# Check for essential rules
+ls .cursor/rules/ | grep -E "(standards|workflow|development)" | wc -l
+
+# Expected minimum rules
+# - mdc-rules-standards.mdc
+# - git-workflow.mdc
+# - firefox-extension-development.mdc
+# - css-styling-standards.mdc
+# - testing-standards.mdc
+# - documentation-standards.mdc
+```
+```
+
+### Critical Error: Incomplete File Coverage
+
+**Error Pattern:**
+- Rules don't cover all relevant file types
+- Missing glob patterns for important files
+- Inconsistent file pattern matching
+
+**Root Cause:**
+- Not analyzing project structure thoroughly
+- Using generic glob patterns
+- Missing specific file type considerations
+
+**Prevention Rules:**
+
+#### Rule 5: Comprehensive Glob Pattern Analysis
+```yaml
+---
+description: Comprehensive Glob Pattern Analysis
+globs:
+  - "**/*"
+ruleType: Always
+---
+
+# Comprehensive Glob Pattern Analysis
+
+## Project Structure Analysis
+Before creating rules, analyze:
+
+```bash
+# Find all file types
+find . -type f | sed 's/.*\.//' | sort | uniq -c | sort -nr
+
+# Find all directories
+find . -type d | sort
+
+# Find configuration files
+find . -name "*.json" -o -name "*.yaml" -o -name "*.yml" -o -name "*.config.*"
+```
+
+## Required Glob Patterns
+Every project should have rules covering:
+
+### Configuration Files
+- `manifest.json` - Extension manifest
+- `package.json` - Node.js dependencies
+- `*.config.js` - Build configuration
+- `.eslintrc*` - Linting configuration
+- `jest.config.js` - Testing configuration
+
+### Source Code
+- `content-scripts/**/*.js` - Content scripts
+- `background/**/*.js` - Background scripts
+- `popup/**/*.js` - Popup scripts
+- `styles/**/*.css` - Stylesheets
+- `tests/**/*.js` - Test files
+
+### Documentation
+- `README.md` - Project overview
+- `**/*.md` - All documentation
+- `specs/**/*.md` - Specifications
+- `docs/**/*.md` - Documentation
+
+## Glob Pattern Validation
+```bash
+# Test glob patterns
+for pattern in "**/*.js" "**/*.css" "**/*.json" "**/*.md"; do
+  echo "Testing pattern: $pattern"
+  find . -path "./node_modules" -prune -o -path "./.git" -prune -o -name "$pattern" -print | head -5
+done
+```
+```
+
 ## Error Categories
 
-Maintain specific sections for different error types.
+### MDC Rules Errors
+- **Missing YAML Frontmatter**: Files without required metadata
+- **Incomplete Frontmatter**: Missing required fields
+- **Invalid Rule Types**: Incorrect ruleType values
+- **Missing Essential Rules**: No rules for major file types
+- **Incomplete Coverage**: Rules don't cover all file types
 
+### File Organization Errors
+- **Wrong Directory**: Files placed outside .cursor/rules
+- **Incorrect Naming**: Files don't follow naming convention
+- **Missing Extensions**: Files without .mdc extension
+- **Duplicate Rules**: Multiple rules for same purpose
 
-### Type Errors
+### Content Errors
+- **Incomplete Examples**: Missing correct/incorrect examples
+- **Unclear Descriptions**: Vague or misleading descriptions
+- **Missing Validation**: No validation procedures
+- **Outdated Information**: Rules not updated with project changes
 
-Document common type errors specific to this codebase and how to properly type definitions.
+## Error Correction Workflow
 
+### When an Error is Detected:
 
-### Integration Errors
+1. **Document the Error**
+   ```markdown
+   ## Error Report
+   - **Date**: [Date]
+   - **Error Type**: [Category]
+   - **File**: [Affected file]
+   - **Description**: [What went wrong]
+   - **Root Cause**: [Why it happened]
+   - **Solution**: [How it was fixed]
+   ```
 
-Track errors related to integration tests and their resolution.
+2. **Create Prevention Rule**
+   - Add to appropriate error category
+   - Include validation steps
+   - Provide examples
+   - Update related rules
 
+3. **Update Knowledge Base**
+   - Add to registry if new pattern
+   - Update existing rules if needed
+   - Document dependencies
 
-### Performance Issues
+4. **Validate Fix**
+   - Test the correction
+   - Verify prevention works
+   - Update documentation
 
-Document patterns that lead to performance issues and their optimized alternatives.
+## Examples
 
+### ❌ Incorrect: Missing YAML Frontmatter
+```markdown
+# Git Workflow Standards
 
-### Dependency Management
-
-Track uv and yarn/package management issues and their solutions.
-
-
-## Continuous Improvement
-
-This rule should evolve over time as new errors are encountered and resolved. When implementing a fix that's been seen before, reference the relevant rule. When implementing a fix for a new type of error, create a new rule or update existing ones.
-
-
-## Example Learning Pattern
-
-      
-
-````
-
----
-
-description: Type Error in Redpanda Connect Pipeline
-
-globs: *.py
-
-alwaysApply: false
-
----
-
-
-# TypeScript Type Error in Pipeline Configuration
-
-
-## Incorrect Pattern
-
-```typescript
-
-const pipeline = createPipeline({
-
-  input: {
-
-    // Missing required type information
-
-    topic: "input-topic",
-
-    config: {}
-
-  },
-
-  // Other configuration
-
-});
-
+## Commit Standards
+- Use conventional commits
+- Follow branch naming
 ```
 
+### ✅ Correct: Proper YAML Frontmatter
+```yaml
+---
+description: Git Workflow and Conventional Commit Standards
+globs:
+  - "**/*.js"
+  - "**/*.css"
+  - "**/*.json"
+  - "**/*.md"
+  - "manifest.json"
+ruleType: Always
+---
 
-## Correct Pattern
+# Git Workflow Standards
 
-```typescript
-
-const pipeline = createPipeline<InputSchema, OutputSchema>({
-
-  input: {
-
-    // Properly typed with required interface
-
-    topic: "input-topic",
-
-    config: {
-
-      consumerGroup: "my-group"
-
-    }
-
-  },
-
-  // Other configuration
-
-});
-
+## Commit Standards
+- Use conventional commits
+- Follow branch naming
 ```
 
+### ❌ Incorrect: Incomplete Rule Coverage
+```
+.cursor/rules/
+├── git-workflow.mdc
+└── mdc-rules-standards.mdc
+```
 
-## Explanation
+### ✅ Correct: Comprehensive Rule Coverage
+```
+.cursor/rules/
+├── mdc-rules-standards.mdc
+├── git-workflow.mdc
+├── firefox-extension-development.mdc
+├── css-styling-standards.mdc
+├── testing-standards.mdc
+├── documentation-standards.mdc
+└── task-planning.mdc
+```
 
-Redpanda Connect pipelines require explicit type parameters and proper configuration of consumer groups to function correctly.
+## Validation Commands
 
-````
+### Pre-commit Validation
+```bash
+# Validate all MDC files have frontmatter
+find .cursor/rules -name "*.mdc" -exec sh -c 'head -1 "$1" | grep -q "^---$" || echo "Missing frontmatter: $1"' _ {} \;
 
+# Validate required fields
+find .cursor/rules -name "*.mdc" -exec sh -c 'grep -q "description:" "$1" && grep -q "globs:" "$1" && grep -q "ruleType:" "$1" || echo "Missing required fields: $1"' _ {} \;
 
-## Implementation Instructions
+# Check rule coverage
+ls .cursor/rules/*.mdc | wc -l
+```
 
-When you encounter a pattern that seems to repeat or an error that occurs more than once, ask Cursor to create a new rule file documenting this pattern in the `.cursor/rules/registry` directory.
+### Continuous Validation
+```bash
+# Automated validation script
+#!/bin/bash
+echo "Validating MDC rules..."
+
+# Check for missing frontmatter
+missing_frontmatter=$(find .cursor/rules -name "*.mdc" -exec sh -c 'head -1 "$1" | grep -q "^---$" || echo "$1"' _ {} \;)
+if [ ! -z "$missing_frontmatter" ]; then
+    echo "❌ Files missing frontmatter:"
+    echo "$missing_frontmatter"
+    exit 1
+fi
+
+# Check for required fields
+missing_fields=$(find .cursor/rules -name "*.mdc" -exec sh -c 'grep -q "description:" "$1" && grep -q "globs:" "$1" && grep -q "ruleType:" "$1" || echo "$1"' _ {} \;)
+if [ ! -z "$missing_fields" ]; then
+    echo "❌ Files missing required fields:"
+    echo "$missing_fields"
+    exit 1
+fi
+
+echo "✅ All MDC rules validated successfully"
+```
+
+## Registry Maintenance
+
+### Adding New Error Patterns
+1. **Identify the pattern** in the error
+2. **Document the root cause**
+3. **Create prevention rules**
+4. **Add to appropriate category**
+5. **Update validation procedures**
+
+### Updating Existing Rules
+1. **Review error reports**
+2. **Identify common patterns**
+3. **Update prevention strategies**
+4. **Test validation procedures**
+5. **Document changes**
+
+This framework ensures that every error becomes a learning opportunity and strengthens the rule system over time.

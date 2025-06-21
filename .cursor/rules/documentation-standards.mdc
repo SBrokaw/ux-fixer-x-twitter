@@ -1,14 +1,328 @@
 ---
-description: Documentation Standards and Best Practices for Project Documentation
-globs:
-  - "specs/**/*.md"
-  - "README.md"
-  - "SPECS.md"
-  - "**/*.md"
-ruleType: Auto Attached
----
----
 description:
 globs:
 alwaysApply: false
 ---
+# Documentation Standards and Best Practices
+
+## Documentation Architecture
+
+### File Organization
+```
+docs/
+├── README.md              # Project overview
+├── SPECS.md              # Technical specifications
+├── specs/                # Detailed specifications
+│   ├── technical-architecture.md
+│   ├── ui-ux-transformation.md
+│   ├── firefox-extension-structure.md
+│   ├── css-styling-strategy.md
+│   ├── content-script-implementation.md
+│   ├── form-design-patterns.md
+│   └── testing-validation.md
+├── tasks/                # Task management
+│   ├── human/           # Human tasks
+│   └── ai/              # AI tasks
+└── references/          # Reference materials
+    └── dashboard_files/ # Original website files
+```
+
+## Markdown Standards
+
+### File Structure
+```markdown
+# Document Title
+
+## Overview
+Brief description of the document's purpose and scope.
+
+## Table of Contents
+- [Section 1](#section-1)
+- [Section 2](#section-2)
+- [Section 3](#section-3)
+
+## Section 1
+Content for section 1.
+
+### Subsection 1.1
+More detailed content.
+
+## Section 2
+Content for section 2.
+
+## References
+- [Link 1](url1)
+- [Link 2](url2)
+```
+
+### Code Block Standards
+```markdown
+### JavaScript Example
+```javascript
+// Use language-specific syntax highlighting
+function example() {
+  console.log('Hello World');
+}
+```
+
+### CSS Example
+```css
+/* Use language-specific syntax highlighting */
+.example {
+  color: #333;
+  font-size: 14px;
+}
+```
+
+### HTML Example
+```html
+<!-- Use language-specific syntax highlighting -->
+<div class="example">
+  <p>Content</p>
+</div>
+```
+```
+
+## Technical Documentation
+
+### Architecture Documentation
+- Clear system overview
+- Component relationships
+- Data flow diagrams
+- API specifications
+- Error handling strategies
+
+### Code Documentation
+```javascript
+/**
+ * Transforms dashboard layout to dense CLI-style interface
+ * @param {HTMLElement} container - The dashboard container element
+ * @param {Object} options - Transformation options
+ * @param {boolean} options.compact - Enable compact mode
+ * @param {string} options.theme - Theme variant
+ * @returns {boolean} Success status
+ * @throws {Error} When container is invalid
+ */
+function transformDashboard(container, options = {}) {
+  // Implementation details
+}
+```
+
+### API Documentation
+```markdown
+## API Reference
+
+### `UXFixer.init(options)`
+Initializes the UX Fixer extension.
+
+**Parameters:**
+- `options` (Object): Configuration options
+  - `theme` (string): Theme variant ('default', 'dark', 'light')
+  - `compact` (boolean): Enable compact mode
+  - `debug` (boolean): Enable debug logging
+
+**Returns:**
+- `boolean`: Success status
+
+**Example:**
+```javascript
+UXFixer.init({
+  theme: 'dark',
+  compact: true,
+  debug: false
+});
+```
+```
+
+## User Documentation
+
+### Installation Guide
+```markdown
+## Installation
+
+### Prerequisites
+- Firefox browser (version 88 or higher)
+- Node.js (version 16 or higher)
+- npm or yarn package manager
+
+### Steps
+1. Clone the repository
+   ```bash
+   git clone https://github.com/username/ux-fixer-firsttechfed.git
+   cd ux-fixer-firsttechfed
+   ```
+
+2. Install dependencies
+   ```bash
+   npm install
+   ```
+
+3. Build the extension
+   ```bash
+   npm run build
+   ```
+
+4. Load in Firefox
+   - Open Firefox
+   - Navigate to `about:debugging`
+   - Click "This Firefox"
+   - Click "Load Temporary Add-on"
+   - Select `manifest.json` from the project directory
+```
+
+### Usage Guide
+```markdown
+## Usage
+
+### Basic Usage
+1. Navigate to firsttechfed.com
+2. Log into your account
+3. The extension will automatically apply transformations
+4. Enjoy the improved CLI-style interface
+
+### Configuration
+You can customize the extension behavior:
+
+```javascript
+// In browser console
+UXFixer.setTheme('dark');
+UXFixer.setCompactMode(true);
+UXFixer.toggleDebugMode();
+```
+
+### Troubleshooting
+Common issues and solutions:
+
+**Extension not loading:**
+- Check Firefox version compatibility
+- Verify manifest.json is valid
+- Check browser console for errors
+
+**Styles not applying:**
+- Refresh the page
+- Check if CSS is being blocked
+- Verify target website hasn't changed
+```
+
+## Maintenance Documentation
+
+### Change Log
+```markdown
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [1.0.0] - 2024-01-15
+### Added
+- Initial release
+- Dashboard transformation
+- Transfer form improvements
+- CLI-style interface
+
+### Changed
+- N/A
+
+### Fixed
+- N/A
+
+## [0.9.0] - 2024-01-10
+### Added
+- Beta version with core functionality
+- Basic CSS transformations
+- Form element improvements
+
+### Changed
+- N/A
+
+### Fixed
+- N/A
+```
+
+### Contributing Guidelines
+```markdown
+# Contributing
+
+## Development Setup
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Update documentation
+6. Submit a pull request
+
+## Code Standards
+- Follow existing code style
+- Add JSDoc comments for functions
+- Write unit tests for new features
+- Update relevant documentation
+
+## Commit Standards
+- Use conventional commit format
+- Write clear commit messages
+- Reference issues when applicable
+```
+
+## Documentation Quality Standards
+
+### Content Standards
+- Clear and concise writing
+- Consistent terminology
+- Proper grammar and spelling
+- Logical organization
+- Complete information
+
+### Technical Accuracy
+- Verify all code examples
+- Test all procedures
+- Keep documentation current
+- Validate links and references
+- Review for accuracy
+
+### Accessibility
+- Use clear headings
+- Provide alt text for images
+- Use descriptive link text
+- Maintain good contrast
+- Test with screen readers
+
+## Documentation Tools
+
+### Markdown Linting
+```json
+{
+  "markdownlint": {
+    "MD013": false,
+    "MD033": false,
+    "MD041": false
+  }
+}
+```
+
+### Documentation Generation
+```bash
+# Generate API documentation
+npm run docs:generate
+
+# Validate documentation
+npm run docs:validate
+
+# Build documentation site
+npm run docs:build
+```
+
+## Version Control
+
+### Documentation in Git
+- Track all documentation changes
+- Use meaningful commit messages
+- Review documentation changes
+- Maintain documentation history
+- Tag documentation releases
+
+### Documentation Workflow
+1. Create documentation branch
+2. Make changes and updates
+3. Review and test content
+4. Submit for review
+5. Merge to main branch
+6. Update version tags

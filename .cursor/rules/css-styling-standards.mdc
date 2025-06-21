@@ -1,13 +1,327 @@
 ---
-description: CSS Styling Standards and Best Practices for Firefox Extension
-globs:
-  - "styles/**/*.css"
-  - "content-scripts/**/*.js"
-  - "manifest.json"
-ruleType: Auto Attached
----
----
 description:
 globs:
 alwaysApply: false
 ---
+# CSS Styling Standards and Best Practices
+
+## CSS Architecture
+
+### File Organization
+```
+styles/
+├── main.css              # Global styles and variables
+├── components.css        # Reusable component styles
+├── forms.css            # Form-specific styling
+├── navigation.css       # Navigation and layout
+└── typography.css       # Text and font styles
+```
+
+### CSS Custom Properties (Variables)
+```css
+:root {
+  /* Color Palette */
+  --primary-color: #2c3e50;
+  --secondary-color: #34495e;
+  --accent-color: #3498db;
+  --text-color: #2c3e50;
+  --background-color: #ecf0f1;
+  
+  /* Typography */
+  --font-family: 'Courier New', monospace;
+  --font-size-small: 12px;
+  --font-size-base: 14px;
+  --font-size-large: 16px;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  /* Layout */
+  --border-radius: 4px;
+  --box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+```
+
+## CLI-Inspired Design Principles
+
+### Dense Layout Standards
+- Use compact spacing with `--spacing-xs` and `--spacing-sm`
+- Minimize padding and margins
+- Use monospace fonts for consistency
+- Implement grid-based layouts
+- Reduce visual noise and decorative elements
+
+### Typography Standards
+```css
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.4;
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  margin: var(--spacing-sm) 0;
+  color: var(--primary-color);
+}
+
+code, pre {
+  font-family: var(--font-family);
+  background-color: rgba(0,0,0,0.05);
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius);
+}
+```
+
+## Component Styling
+
+### Form Components
+```css
+.form-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+  color: var(--primary-color);
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 1px solid #bdc3c7;
+  border-radius: var(--border-radius);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  background-color: white;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+```
+
+### Button Components
+```css
+.btn {
+  display: inline-block;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid transparent;
+  border-radius: var(--border-radius);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-secondary:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+```
+
+## Layout Standards
+
+### Grid System
+```css
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 calc(-1 * var(--spacing-sm));
+}
+
+.col {
+  flex: 1;
+  padding: 0 var(--spacing-sm);
+}
+
+.col-1 { flex: 0 0 8.333333%; }
+.col-2 { flex: 0 0 16.666667%; }
+.col-3 { flex: 0 0 25%; }
+.col-4 { flex: 0 0 33.333333%; }
+.col-6 { flex: 0 0 50%; }
+.col-8 { flex: 0 0 66.666667%; }
+.col-12 { flex: 0 0 100%; }
+```
+
+### Navigation Layout
+```css
+.nav {
+  background-color: var(--primary-color);
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--secondary-color);
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  margin-right: var(--spacing-md);
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s ease;
+}
+
+.nav-link:hover {
+  background-color: var(--secondary-color);
+}
+```
+
+## Specificity and Override Strategy
+
+### CSS Specificity Hierarchy
+1. **Base styles**: Element selectors (low specificity)
+2. **Component styles**: Class selectors (medium specificity)
+3. **Utility styles**: Single-purpose classes (medium specificity)
+4. **Override styles**: Specific selectors with `!important` (high specificity)
+
+### Override Strategy
+```css
+/* Base styles */
+button {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+}
+
+/* Component styles */
+.btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius);
+}
+
+/* Override for specific cases */
+.btn.btn-large {
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-large);
+}
+
+/* Critical overrides (use sparingly) */
+.btn.btn-critical {
+  background-color: #e74c3c !important;
+  color: white !important;
+}
+```
+
+## Performance Optimization
+
+### CSS Loading Strategy
+- Inject CSS early in page load
+- Use `!important` strategically for overrides
+- Minimize CSS specificity conflicts
+- Use efficient selectors
+- Avoid deep nesting
+
+### CSS Injection in Content Scripts
+```javascript
+// Inject CSS with proper error handling
+function injectCSS(cssContent) {
+  const style = document.createElement('style');
+  style.textContent = cssContent;
+  style.setAttribute('data-extension', 'ux-fixer');
+  
+  // Insert at the beginning of head for priority
+  const head = document.head || document.getElementsByTagName('head')[0];
+  head.insertBefore(style, head.firstChild);
+  
+  return style;
+}
+```
+
+## Accessibility Standards
+
+### Color and Contrast
+- Maintain minimum contrast ratio of 4.5:1 for normal text
+- Use color combinations that work for colorblind users
+- Provide alternative indicators beyond color
+- Test with high contrast mode
+
+### Focus Management
+```css
+/* Visible focus indicators */
+*:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+/* Skip links for keyboard navigation */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--primary-color);
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: var(--border-radius);
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+```
+
+## Testing and Validation
+
+### CSS Testing Checklist
+- [ ] All styles apply correctly
+- [ ] No specificity conflicts
+- [ ] Responsive design works
+- [ ] Accessibility standards met
+- [ ] Performance impact acceptable
+- [ ] Cross-browser compatibility
+- [ ] Print styles work correctly
+
+### CSS Validation
+```bash
+# Validate CSS syntax
+npm run validate:css
+
+# Check for unused CSS
+npm run audit:css
+
+# Optimize CSS for production
+npm run build:css
+```

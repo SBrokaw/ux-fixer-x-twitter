@@ -1,0 +1,46 @@
+# X.com UX Fixer - Cursor Rules Configuration
+# This file includes all project-specific rules for the X.com UX Fixer Firefox extension
+
+# Core Development Rules
+include: .cursor/rules/technical-feasibility.mdc
+include: .cursor/rules/error-correction.mdc
+include: .cursor/rules/firefox-extension-development.mdc
+include: .cursor/rules/mdc-rules-standards.mdc
+
+# Code Quality Rules
+include: .cursor/rules/css-styling-standards.mdc
+include: .cursor/rules/testing-standards.mdc
+include: .cursor/rules/documentation-standards.mdc
+
+# Project Management Rules
+include: .cursor/rules/task-planning.mdc
+include: .cursor/rules/git-workflow.mdc
+
+# Project Description
+description: |
+  X.com UX Fixer Firefox Extension
+  
+  A Firefox extension designed to restyle and fix the UX of x.com/home feed, 
+  transforming it into a dense, efficient, text-based interface inspired by 
+  excellent CLI design principles. The extension removes unnecessary visual 
+  clutter, increases information density, and optimizes the feed for rapid 
+  content consumption while maintaining all core functionality.
+  
+  Key principles:
+  - Density First: Maximize content display without sacrificing readability
+  - Text-Based Interface: Prioritize text content over graphical elements
+  - No Hidden Options: Eliminate hamburger menus and dropdowns
+  - Content Excellence: Apply proven content consumption patterns
+  - Functionality Preservation: Maintain all existing functionality
+  - Performance Focus: Reduce visual noise and improve scrolling performance
+
+# File Patterns
+globs:
+  - "**/*.js"
+  - "**/*.css"
+  - "**/*.json"
+  - "**/*.md"
+  - "**/*.html"
+
+# Always Apply Rules
+alwaysApply: true 

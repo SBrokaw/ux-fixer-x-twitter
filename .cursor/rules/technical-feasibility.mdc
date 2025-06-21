@@ -1,5 +1,193 @@
 ---
-description:
-globs:
+description: knock down technical uncertainties at the critical beginning of a project. Technical feasibility is always a high priority task
+globs: 
 alwaysApply: false
 ---
+## Description
+
+This rule ensures that technical feasibility is assessed before starting any project that involves modifying external websites or applications. It prevents wasting time and resources on projects that are technically impossible or impractical due to platform limitations, security policies, or architectural constraints.
+
+## Rule
+
+**BEFORE starting any project that modifies external websites or applications, you MUST:**
+
+1. **Conduct a Technical Feasibility Assessment** using the checklist below
+2. **Create feasibility validation tasks** in `tasks/human/validation/` 
+3. **Complete feasibility testing** before writing any production code
+4. **Document findings** and either proceed or abandon based on results
+5. **Update project status** based on feasibility results
+
+## Technical Feasibility Assessment Checklist
+
+### 🔴 CRITICAL - Immediate Showstoppers
+- [ ] **Content Security Policy (CSP)**: Site doesn't have strict CSP that blocks modifications
+- [ ] **Framework Complexity**: Site doesn't use heavy SPA frameworks (React/Vue/Angular with complex state)
+- [ ] **Security Critical**: Site isn't banking, healthcare, or other security-critical application
+- [ ] **Dynamic Content**: Site doesn't load critical content dynamically after page load
+- [ ] **Anti-Tampering**: Site doesn't actively detect and revert modifications
+
+### 🟡 WARNING - Potential Issues
+- [ ] **JavaScript Framework**: Site uses simple/static JavaScript or basic frameworks
+- [ ] **DOM Structure**: Site has predictable, simple DOM structure
+- [ ] **Event Handling**: Site doesn't use complex event-driven architecture
+- [ ] **State Management**: Site doesn't have complex client-side state management
+- [ ] **Component Architecture**: Site doesn't use complex component hierarchies
+
+### 🟢 POSITIVE - Good Indicators
+- [ ] **Static Content**: Site has mostly static, predictable content
+- [ ] **Simple Structure**: Site uses basic HTML/CSS without complex frameworks
+- [ ] **Text-Heavy**: Site has substantial text content that would benefit from density
+- [ ] **No Critical Security**: Site isn't handling sensitive financial/medical data
+- [ ] **Predictable Layout**: Site has consistent, predictable layout patterns
+
+## Feasibility Validation Tasks
+
+### Required Human Tasks (Create in `tasks/human/validation/`)
+
+1. **01-technical-assessment.md** - Manual assessment of site architecture
+2. **02-csp-analysis.md** - Check for Content Security Policy restrictions
+3. **03-framework-detection.md** - Identify JavaScript frameworks and complexity
+4. **04-dom-structure-analysis.md** - Analyze DOM structure and predictability
+5. **05-modification-testing.md** - Test if basic modifications are possible
+
+### Task Template for Feasibility Tasks
+
+```markdown
+# Task: [Feasibility Assessment Name]
+Priority: High
+Estimated Time: 30-60 minutes
+Dependencies: [List requirements]
+Status: Not Started
+
+## Objective
+[Clear description of what technical aspect to assess]
+
+## Assessment Steps
+1. [ ] Step one - specific technical check
+2. [ ] Step two - specific technical check
+3. [ ] Step three - specific technical check
+
+## Success Criteria
+- [ ] Criterion 1 - specific measurable outcome
+- [ ] Criterion 2 - specific measurable outcome
+- [ ] Criterion 3 - specific measurable outcome
+
+## Risk Indicators
+- [ ] Red flag 1 - if found, project may be unfeasible
+- [ ] Red flag 2 - if found, project may be unfeasible
+- [ ] Red flag 3 - if found, project may be unfeasible
+
+## Notes
+[Technical details, tools needed, specific things to look for]
+
+## Progress Updates
+### [Date] - [Duration]
+- [ ] Assessment completed
+- [ ] Findings documented
+- [ ] Risk level determined
+- [ ] Recommendation made
+```
+
+## Assessment Tools and Techniques
+
+### Browser Developer Tools
+- **Console**: Check for CSP errors, framework detection
+- **Network**: Analyze requests, check for dynamic loading
+- **Elements**: Inspect DOM structure, look for framework indicators
+- **Sources**: Check for complex JavaScript frameworks
+- **Application**: Check for service workers, local storage complexity
+
+### Framework Detection
+Look for these indicators of complex frameworks:
+- `data-react-*` attributes (React)
+- `ng-*` attributes (Angular)
+- `v-*` attributes (Vue)
+- `iris-*` attributes (Alkami/Iris)
+- Complex `data-*` attributes
+- Dynamic class names with hashes
+- Complex component hierarchies
+
+### CSP Analysis
+Check for these CSP headers:
+- `Content-Security-Policy`
+- `X-Content-Type-Options`
+- `X-Frame-Options`
+- `X-XSS-Protection`
+
+### Modification Testing
+Test these basic modifications:
+- Change text content
+- Modify CSS styles
+- Add/remove elements
+- Check if changes persist or are reverted
+
+## Decision Matrix
+
+### 🟢 PROCEED - All Green
+- All critical checks pass
+- No major framework complexity
+- No strict CSP
+- Simple DOM structure
+- Modifications persist
+
+### 🟡 PROCEED WITH CAUTION - Some Yellow
+- Minor framework usage
+- Some dynamic content
+- Basic CSP present
+- Requires more complex techniques
+- May need workarounds
+
+### 🔴 ABANDON - Any Red
+- Strict CSP blocking modifications
+- Heavy SPA framework with complex state
+- Security-critical application
+- Anti-tampering measures
+- Modifications immediately reverted
+
+## Examples
+
+### ✅ Good Candidate: Wikipedia
+- **Static content**: Mostly static HTML
+- **Simple structure**: Predictable DOM
+- **No strict CSP**: Allows modifications
+- **Text-heavy**: Benefits from density
+- **No security critical**: Public information
+
+### ❌ Bad Candidate: FirstTechFed Banking
+- **Strict CSP**: Blocks modifications
+- **Complex framework**: Alkami Iris with dynamic state
+- **Security critical**: Banking application
+- **Anti-tampering**: Reverts all changes
+- **Dynamic content**: Navigation loads after page
+
+### 🟡 Marginal Candidate: Reddit
+- **Some dynamic content**: But mostly static
+- **Basic framework**: React but simple structure
+- **Moderate CSP**: Some restrictions but workable
+- **Text-heavy**: Good for density
+- **Public content**: No security concerns
+
+## Implementation Workflow
+
+1. **Create feasibility tasks** in `tasks/human/validation/`
+2. **Complete manual assessment** using browser tools
+3. **Document findings** with screenshots and notes
+4. **Make go/no-go decision** based on assessment
+5. **Update project status** in README
+6. **Either proceed with development** or abandon with documentation
+
+## Registry Integration
+
+This rule integrates with the error correction system:
+- Failed feasibility assessments are recorded in the registry
+- Patterns of failure are analyzed for future prevention
+- Successful assessments inform future project selection
+- Lessons learned are documented for knowledge base updates
+
+## File Organization
+
+- Feasibility tasks: `tasks/human/validation/01-*` through `05-*`
+- Assessment data: `data/validation/feasibility/`
+- Screenshots: `data/validation/feasibility/screenshots/`
+- Reports: `data/validation/feasibility/reports/`
+

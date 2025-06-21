@@ -1,0 +1,322 @@
+/* X.com UX Fixer - Content Styles */
+
+/* ==========================================================================
+   CSS Custom Properties - High Contrast Theme
+   ========================================================================== */
+:root {
+  --text-primary: #000000;
+  --text-secondary: #657786;
+  --background-primary: #ffffff;
+  --background-secondary: #f7f9fa;
+  --border-color: #e1e8ed;
+  --accent-color: #1da1f2;
+  --success-color: #17bf63;
+  --warning-color: #ffad1f;
+  --error-color: #e0245e;
+  --font-mono: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ==========================================================================
+   Performance Optimizations
+   ========================================================================== */
+* {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+}
+
+/* Allow only essential transitions */
+[data-testid="like"]:hover,
+[data-testid="retweet"]:hover,
+[data-testid="reply"]:hover {
+  transition: background-color 0.1s ease !important;
+}
+
+/* ==========================================================================
+   Main Feed Container Transformations
+   ========================================================================== */
+[data-testid="primaryColumn"] {
+  max-width: none !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: var(--background-primary) !important;
+}
+
+/* Remove decorative backgrounds */
+[data-testid="primaryColumn"] > div {
+  background: none !important;
+  box-shadow: none !important;
+}
+
+/* Optimize scrolling performance */
+[data-testid="primaryColumn"] {
+  will-change: scroll-position;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* ==========================================================================
+   Tweet Item Transformations
+   ========================================================================== */
+[data-testid="tweet"] {
+  padding: 8px 12px !important;
+  margin: 0 !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  background: transparent !important;
+  contain: layout style paint;
+}
+
+/* Compact tweet layout */
+[data-testid="tweet"] article {
+  display: grid !important;
+  grid-template-columns: auto 1fr auto !important;
+  gap: 8px !important;
+  align-items: start !important;
+}
+
+/* Remove excessive spacing */
+[data-testid="tweet"] > div {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* ==========================================================================
+   Typography Transformations
+   ========================================================================== */
+/* Primary content - tweet text */
+[data-testid="tweetText"] {
+  font-family: var(--font-mono) !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  color: var(--text-primary) !important;
+  font-weight: 400 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Username and metadata */
+[data-testid="User-Name"] {
+  font-family: var(--font-mono) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Timestamps and secondary info */
+time, [data-testid="UserScreenName"] {
+  font-family: var(--font-mono) !important;
+  font-size: 12px !important;
+  color: var(--text-secondary) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ==========================================================================
+   Navigation Sidebar Transformations
+   ========================================================================== */
+[data-testid="sidebarColumn"] {
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  height: 100vh !important;
+  width: 200px !important;
+  background: var(--background-primary) !important;
+  border-right: 1px solid var(--border-color) !important;
+  z-index: 1000 !important;
+}
+
+/* Always visible navigation */
+[data-testid="sidebarColumn"] nav {
+  padding: 16px 0 !important;
+  height: 100% !important;
+  overflow-y: auto !important;
+}
+
+/* Navigation links */
+[data-testid="AppTabBar"] a {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 12px 16px !important;
+  color: var(--text-primary) !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+  border-radius: 0 !important;
+  transition: background-color 0.1s ease !important;
+  font-family: var(--font-mono) !important;
+  font-size: 14px !important;
+}
+
+[data-testid="AppTabBar"] a:hover {
+  background: var(--background-secondary) !important;
+}
+
+[data-testid="AppTabBar"] a[aria-current="page"] {
+  background: #e8f5fd !important;
+  color: var(--accent-color) !important;
+  font-weight: 600 !important;
+}
+
+/* ==========================================================================
+   Action Button Transformations
+   ========================================================================== */
+/* Compact action buttons */
+[data-testid="like"], [data-testid="retweet"], [data-testid="reply"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 4px 8px !important;
+  border: 1px solid transparent !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+  font-family: var(--font-mono) !important;
+  margin: 0 4px 0 0 !important;
+}
+
+[data-testid="like"]:hover, [data-testid="retweet"]:hover, [data-testid="reply"]:hover {
+  background: var(--background-secondary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Active states */
+[data-testid="like"][aria-pressed="true"] {
+  color: var(--error-color) !important;
+}
+
+[data-testid="retweet"][aria-pressed="true"] {
+  color: var(--success-color) !important;
+}
+
+/* ==========================================================================
+   Content Prioritization
+   ========================================================================== */
+/* Hide media by default, show on hover */
+[data-testid="tweetPhoto"] {
+  max-height: 100px !important;
+  overflow: hidden !important;
+  transition: max-height 0.2s ease !important;
+}
+
+[data-testid="tweetPhoto"]:hover {
+  max-height: 300px !important;
+}
+
+/* Collapse quote tweets */
+[data-testid="tweet"] [data-testid="tweet"] {
+  margin-left: 16px !important;
+  padding: 8px !important;
+  border-left: 2px solid var(--border-color) !important;
+  background: var(--background-secondary) !important;
+}
+
+/* Remove decorative elements */
+[data-testid="tweet"] svg:not([aria-label]) {
+  display: none !important;
+}
+
+/* Remove promotional content */
+[data-testid="promotedTweet"] {
+  display: none !important;
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+/* Desktop: Full width with sidebar */
+@media (min-width: 1024px) {
+  [data-testid="primaryColumn"] {
+    margin-left: 200px !important;
+    max-width: none !important;
+  }
+  
+  [data-testid="sidebarColumn"] {
+    display: block !important;
+  }
+}
+
+/* Tablet: Compact layout */
+@media (max-width: 1023px) and (min-width: 768px) {
+  [data-testid="primaryColumn"] {
+    margin-left: 0 !important;
+    padding: 0 16px !important;
+  }
+  
+  [data-testid="sidebarColumn"] {
+    display: none !important;
+  }
+}
+
+/* Mobile: Minimal layout */
+@media (max-width: 767px) {
+  [data-testid="primaryColumn"] {
+    margin-left: 0 !important;
+    padding: 0 8px !important;
+  }
+  
+  [data-testid="tweet"] {
+    padding: 6px 8px !important;
+  }
+  
+  [data-testid="tweetText"] {
+    font-size: 13px !important;
+  }
+}
+
+/* ==========================================================================
+   Accessibility Enhancements
+   ========================================================================== */
+/* Clear focus indicators */
+[data-testid="tweet"]:focus,
+[data-testid="like"]:focus,
+[data-testid="retweet"]:focus,
+[data-testid="reply"]:focus {
+  outline: 2px solid var(--accent-color) !important;
+  outline-offset: 2px !important;
+}
+
+/* Skip links */
+.skip-link {
+  position: absolute !important;
+  top: -40px !important;
+  left: 6px !important;
+  background: var(--text-primary) !important;
+  color: var(--background-primary) !important;
+  padding: 8px !important;
+  text-decoration: none !important;
+  z-index: 10000 !important;
+  font-family: var(--font-mono) !important;
+}
+
+.skip-link:focus {
+  top: 6px !important;
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+.ux-fixer-hidden {
+  display: none !important;
+}
+
+.ux-fixer-compact {
+  padding: 4px !important;
+  margin: 0 !important;
+}
+
+.ux-fixer-mono {
+  font-family: var(--font-mono) !important;
+}
+
+.ux-fixer-high-contrast {
+  color: var(--text-primary) !important;
+  background: var(--background-primary) !important;
+} 

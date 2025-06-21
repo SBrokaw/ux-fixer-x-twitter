@@ -1,14 +1,346 @@
 ---
-description: Testing Standards and Best Practices for Firefox Extension Development
-globs:
-  - "tests/**/*.js"
-  - "tests/**/*.json"
-  - "jest.config.js"
-  - "package.json"
-ruleType: Auto Attached
----
----
 description:
 globs:
 alwaysApply: false
 ---
+# Testing Standards and Best Practices
+
+## Testing Architecture
+
+### Test Organization
+```
+tests/
+├── setup.js                 # Test environment setup
+├── unit/                    # Unit tests
+│   ├── transformers/       # Transformer class tests
+│   ├── utils/             # Utility function tests
+│   └── main.test.js       # Main content script tests
+├── integration/            # Integration tests
+│   ├── dashboard.test.js  # Dashboard page tests
+│   └── transfer.test.js   # Transfer page tests
+└── fixtures/              # Test data and mock files
+    ├── dashboard.html     # Mock dashboard page
+    └── transfer.html      # Mock transfer page
+```
+
+### Jest Configuration Standards
+```javascript
+module.exports = {
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
+  testMatch: [
+    '<rootDir>/tests/**/*.test.js',
+    '<rootDir>/tests/**/*.spec.js'
+  ],
+  collectCoverageFrom: [
+    'content-scripts/**/*.js',
+    '!content-scripts/**/*.min.js'
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80
+    }
+  }
+};
+```
+
+## Unit Testing Standards
+
+### Transformer Class Testing
+```javascript
+describe('LayoutTransformer', () => {
+  let transformer;
+  let mockElement;
+
+  beforeEach(() => {
+    transformer = new LayoutTransformer();
+    mockElement = document.createElement('div');
+    mockElement.className = 'dashboard-container';
+  });
+
+  afterEach(() => {
+    transformer.destroy();
+  });
+
+  test('should transform dashboard layout', () => {
+    const result = transformer.transform(mockElement);
+    expect(result).toBe(true);
+    expect(mockElement.classList.contains('ux-fixer-dense')).toBe(true);
+  });
+
+  test('should handle missing elements gracefully', () => {
+    const result = transformer.transform(null);
+    expect(result).toBe(false);
+  });
+
+  test('should preserve existing functionality', () => {
+    const originalClickHandler = jest.fn();
+    mockElement.addEventListener('click', originalClickHandler);
+    
+    transformer.transform(mockElement);
+    mockElement.click();
+    
+    expect(originalClickHandler).toHaveBeenCalled();
+  });
+});
+```
+
+### Error Handling Tests
+```javascript
+describe('Error Handling', () => {
+  test('should handle DOM manipulation errors', () => {
+    const transformer = new FormTransformer();
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    
+    // Mock DOM error
+    const mockElement = {
+      querySelector: () => { throw new Error('DOM Error'); }
+    };
+    
+    const result = transformer.transform(mockElement);
+    
+    expect(result).toBe(false);
+    expect(consoleSpy).toHaveBeenCalledWith(
+      '[UX Fixer]',
+      'Form transformation failed',
+      expect.any(Error)
+    );
+    
+    consoleSpy.mockRestore();
+  });
+});
+```
+
+## Integration Testing
+
+### Page-Specific Tests
+```javascript
+describe('Dashboard Integration', () => {
+  let page;
+
+  beforeAll(async () => {
+    page = await loadTestPage('dashboard.html');
+  });
+
+  afterAll(async () => {
+    await page.close();
+  });
+
+  test('should apply all transformations to dashboard', async () => {
+    await page.evaluate(() => {
+      // Initialize extension
+      window.uxFixer.init();
+    });
+
+    // Check layout transformation
+    const hasDenseLayout = await page.evaluate(() => {
+      return document.querySelector('.dashboard-container')?.classList.contains('ux-fixer-dense');
+    });
+    expect(hasDenseLayout).toBe(true);
+
+    // Check navigation transformation
+    const hasDenseNav = await page.evaluate(() => {
+      return document.querySelector('nav')?.classList.contains('ux-fixer-dense');
+    });
+    expect(hasDenseNav).toBe(true);
+  });
+
+  test('should maintain functionality after transformation', async () => {
+    await page.evaluate(() => {
+      window.uxFixer.init();
+    });
+
+    // Test that buttons still work
+    const buttonClickable = await page.evaluate(() => {
+      const button = document.querySelector('.btn-primary');
+      if (!button) return false;
+      
+      let clicked = false;
+      button.addEventListener('click', () => { clicked = true; });
+      button.click();
+      return clicked;
+    });
+    expect(buttonClickable).toBe(true);
+  });
+});
+```
+
+## Performance Testing
+
+### Load Time Impact
+```javascript
+describe('Performance Impact', () => {
+  test('should not significantly impact page load time', async () => {
+    const page = await loadTestPage('dashboard.html');
+    
+    // Measure load time without extension
+    const startTime = performance.now();
+    await page.waitForLoadState('networkidle');
+    const loadTimeWithout = performance.now() - startTime;
+    
+    // Measure load time with extension
+    await page.reload();
+    const startTimeWith = performance.now();
+    await page.evaluate(() => {
+      window.uxFixer.init();
+    });
+    await page.waitForLoadState('networkidle');
+    const loadTimeWith = performance.now() - startTimeWith;
+    
+    // Extension should add less than 100ms to load time
+    const impact = loadTimeWith - loadTimeWithout;
+    expect(impact).toBeLessThan(100);
+    
+    await page.close();
+  });
+});
+```
+
+## Accessibility Testing
+
+### WCAG Compliance
+```javascript
+describe('Accessibility Standards', () => {
+  test('should maintain keyboard navigation', async () => {
+    const page = await loadTestPage('dashboard.html');
+    await page.evaluate(() => {
+      window.uxFixer.init();
+    });
+
+    // Test tab order
+    await page.keyboard.press('Tab');
+    const firstFocus = await page.evaluate(() => document.activeElement.tagName);
+    expect(firstFocus).toBe('A');
+
+    await page.keyboard.press('Tab');
+    const secondFocus = await page.evaluate(() => document.activeElement.tagName);
+    expect(secondFocus).toBe('BUTTON');
+
+    await page.close();
+  });
+
+  test('should maintain color contrast ratios', async () => {
+    const page = await loadTestPage('dashboard.html');
+    await page.evaluate(() => {
+      window.uxFixer.init();
+    });
+
+    // Test text contrast
+    const contrastRatio = await page.evaluate(() => {
+      const textElement = document.querySelector('.dashboard-text');
+      if (!textElement) return 0;
+      
+      const style = window.getComputedStyle(textElement);
+      const color = style.color;
+      const backgroundColor = style.backgroundColor;
+      
+      // Simple contrast calculation (simplified)
+      return calculateContrastRatio(color, backgroundColor);
+    });
+
+    expect(contrastRatio).toBeGreaterThan(4.5);
+    await page.close();
+  });
+});
+```
+
+## Manual Testing Checklist
+
+### Pre-Release Testing
+- [ ] Extension loads without console errors
+- [ ] All CSS transformations apply correctly
+- [ ] JavaScript transformations work as expected
+- [ ] No broken functionality on target pages
+- [ ] Performance impact is acceptable (< 100ms)
+- [ ] Visual changes match design specifications
+- [ ] Accessibility standards are maintained
+- [ ] Extension works on different screen sizes
+- [ ] Extension handles dynamic content properly
+- [ ] Error recovery works gracefully
+
+### Cross-Browser Testing
+- [ ] Firefox (primary target)
+- [ ] Chrome (for comparison)
+- [ ] Safari (if applicable)
+- [ ] Edge (if applicable)
+
+## Test Data Management
+
+### Fixture Files
+```javascript
+// tests/fixtures/dashboard.html
+const dashboardHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard - First Tech Federal Credit Union</title>
+</head>
+<body>
+  <nav class="main-navigation">
+    <ul>
+      <li><a href="/dashboard">Dashboard</a></li>
+      <li><a href="/transfers">Transfers</a></li>
+    </ul>
+  </nav>
+  <main class="dashboard-container">
+    <h1>Welcome to Online Banking</h1>
+    <div class="account-summary">
+      <h2>Account Summary</h2>
+      <div class="account-list">
+        <div class="account-item">
+          <span class="account-name">Checking Account</span>
+          <span class="account-balance">$1,234.56</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+`;
+
+module.exports = { dashboardHTML };
+```
+
+## Continuous Integration
+
+### GitHub Actions Testing
+```yaml
+name: Test Extension
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      
+      - run: npm ci
+      - run: npm test
+      - run: npm run test:coverage
+      - run: npm run test:integration
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@v2
+```
+
+## Test Reporting
+
+### Coverage Reports
+- Maintain minimum 80% code coverage
+- Generate HTML coverage reports
+- Track coverage trends over time
+- Identify untested code paths
+- Document testing gaps
+
+### Test Results
+- Clear pass/fail indicators
+- Detailed error messages
+- Performance metrics
+- Accessibility compliance
+- Cross-browser compatibility
