@@ -3,6 +3,8 @@ description:
 globs: 
 alwaysApply: true
 ---
+# Task Planning and Organization Standards
+
 ## Description
 
 This rule ensures effective task planning and progress tracking using the `tasks/ai/scratchpad.md` file as a scratchpad. The scratchpad serves as a central place for AI task organization, planning, and reflection. It also defines the structure and content requirements for human-in-the-loop tasks.
@@ -48,6 +50,39 @@ When managing AI tasks:
 4. Create task in correct directory
 5. Update `tasks/human/README.md` immediately
 6. Verify no orphaned tasks remain
+
+## CRITICAL: Documentation File Organization Rules
+
+**NEVER create ALLCAPS.md files at the root level. All documentation must be properly organized:**
+
+1. **Documentation Files** - Must go in `docs/` directory:
+   - `docs/testing-guide.md` (not `TESTING_GUIDE.md`)
+   - `docs/troubleshooting.md` (not `TROUBLESHOOTING.md`)
+   - `docs/issue-report-template.md` (not `ISSUE_REPORT_TEMPLATE.md`)
+   - `docs/first-pass-summary.md` (not `FIRST_PASS_SUMMARY.md`)
+
+2. **Specification Files** - Must go in `specs/` directory:
+   - `specs/technical-architecture.md`
+   - `specs/testing-validation.md`
+   - `specs/content-consumption-patterns.md`
+
+3. **Task Files** - Must go in `tasks/` directory:
+   - `tasks/ai/scratchpad.md`
+   - `tasks/human/validation/01-task-name.md`
+
+4. **Root Level Files** - Only these are allowed at root:
+   - `README.md`
+   - `SPECS.md`
+   - `manifest.json`
+   - `build.sh`
+   - `.cursorrules`
+   - Configuration files (`.gitignore`, `package.json`, etc.)
+
+**MANDATORY CHECKS BEFORE CREATING DOCUMENTATION:**
+- [ ] Check if file should go in `docs/`, `specs/`, or `tasks/`
+- [ ] Use lowercase filenames with hyphens (kebab-case)
+- [ ] Never use ALLCAPS.md at root level
+- [ ] Update relevant README files if adding new documentation
 
 ## AI Scratchpad Format
 
@@ -152,6 +187,17 @@ tasks/
 │   ├── task-template.md       # Standard task format
 │   └── data-collection-template.md
 └── timeline-management.md     # Project timeline and deadlines
+
+docs/
+├── testing-guide.md           # Testing procedures and solutions
+├── troubleshooting.md         # Debugging and problem resolution
+├── issue-report-template.md   # Standardized issue reporting
+└── first-pass-summary.md      # Project milestone summaries
+
+specs/
+├── technical-architecture.md  # Technical specifications
+├── testing-validation.md      # Testing framework specs
+└── content-consumption-patterns.md # UX patterns
 ```
 
 ## Human Task README Requirements
@@ -251,6 +297,10 @@ Status: Not Started
 ```
 **Problem**: Task created at root level instead of in `validation/` directory
 
+❌ **INCORRECT - ALLCAPS Documentation:**
+Creating `TESTING_GUIDE.md` at root level
+**Problem**: Should be `docs/testing-guide.md` with lowercase filename
+
 ❌ **INCORRECT - Duplicate Task:**
 Creating `03-extension-debugging.md` when `03-extension-manual-verification.md` already exists
 **Problem**: Should merge similar tasks instead of creating duplicates
@@ -259,5 +309,7 @@ Creating `03-extension-debugging.md` when `03-extension-manual-verification.md` 
 
 - AI task files: `tasks/ai/`
 - Human task files: `tasks/human/` (in appropriate subdirectories)
+- Documentation files: `docs/` (lowercase filenames)
+- Specification files: `specs/`
 - Templates: `tasks/templates/`
 - Scratchpad: `tasks/ai/scratchpad.md`

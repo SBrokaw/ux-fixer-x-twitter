@@ -33,6 +33,17 @@
   - Estimated Time: 30-45 minutes
   - Dependencies: Firefox browser, developer tools, X.com account, basic extension
 
+### 🔴 HIGH PRIORITY - Debugging System Validation
+- **07-debug-panel-verification.md** (Validation)
+  - Status: Not Started
+  - Estimated Time: 30-45 minutes
+  - Dependencies: Updated extension, Firefox browser, X.com account
+
+- **08-extension-issue-resolution.md** (Validation)
+  - Status: Not Started
+  - Estimated Time: 1-2 hours
+  - Dependencies: Debug panel verification, issue identification
+
 ## Task Categories
 
 ### Validation Tasks (`validation/`)

@@ -58,7 +58,7 @@
 }
 
 /* ==========================================================================
-   Tweet Item Transformations
+   Tweet Item Transformations - FIXED FOR OVERLAP ISSUES
    ========================================================================== */
 [data-testid="tweet"] {
   padding: 8px 12px !important;
@@ -66,24 +66,28 @@
   border-bottom: 1px solid var(--border-color) !important;
   background: transparent !important;
   contain: layout style paint;
+  position: relative !important; /* Prevent overlap issues */
+  z-index: 1 !important;
 }
 
-/* Compact tweet layout */
+/* Compact tweet layout - FIXED */
 [data-testid="tweet"] article {
   display: grid !important;
   grid-template-columns: auto 1fr auto !important;
   gap: 8px !important;
   align-items: start !important;
+  position: relative !important;
 }
 
 /* Remove excessive spacing */
 [data-testid="tweet"] > div {
   padding: 0 !important;
   margin: 0 !important;
+  position: relative !important;
 }
 
 /* ==========================================================================
-   Typography Transformations
+   Typography Transformations - FIXED FOR OVERLAP
    ========================================================================== */
 /* Primary content - tweet text */
 [data-testid="tweetText"] {
@@ -94,9 +98,16 @@
   font-weight: 400 !important;
   margin: 0 !important;
   padding: 0 !important;
+  display: block !important;
+  overflow: visible !important;
+  white-space: normal !important;
+  word-wrap: break-word !important;
+  min-height: 1em !important;
+  position: relative !important;
+  z-index: 2 !important;
 }
 
-/* Username and metadata */
+/* Username and metadata - FIXED */
 [data-testid="User-Name"] {
   font-family: var(--font-mono) !important;
   font-size: 13px !important;
@@ -104,15 +115,34 @@
   color: var(--text-primary) !important;
   margin: 0 !important;
   padding: 0 !important;
+  display: block !important;
+  position: relative !important;
+  z-index: 2 !important;
 }
 
-/* Timestamps and secondary info */
+/* Timestamps and secondary info - FIXED */
 time, [data-testid="UserScreenName"] {
   font-family: var(--font-mono) !important;
   font-size: 12px !important;
   color: var(--text-secondary) !important;
   margin: 0 !important;
   padding: 0 !important;
+  display: inline-block !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* Fix for missing UserScreenName selector */
+[data-testid="UserScreenName"], 
+span[dir="ltr"]:has(span[dir="ltr"] span[dir="ltr"]) {
+  font-family: var(--font-mono) !important;
+  font-size: 12px !important;
+  color: var(--text-secondary) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: inline-block !important;
+  position: relative !important;
+  z-index: 2 !important;
 }
 
 /* ==========================================================================
@@ -162,9 +192,9 @@ time, [data-testid="UserScreenName"] {
 }
 
 /* ==========================================================================
-   Action Button Transformations
+   Action Button Transformations - FIXED FOR BROKEN BUTTONS
    ========================================================================== */
-/* Compact action buttons */
+/* Compact action buttons - FIXED */
 [data-testid="like"], [data-testid="retweet"], [data-testid="reply"] {
   display: inline-flex !important;
   align-items: center !important;
@@ -179,6 +209,12 @@ time, [data-testid="UserScreenName"] {
   text-decoration: none !important;
   font-family: var(--font-mono) !important;
   margin: 0 4px 0 0 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-width: 60px !important;
+  min-height: 32px !important;
+  position: relative !important;
+  z-index: 3 !important;
 }
 
 [data-testid="like"]:hover, [data-testid="retweet"]:hover, [data-testid="reply"]:hover {
@@ -196,34 +232,49 @@ time, [data-testid="UserScreenName"] {
   color: var(--success-color) !important;
 }
 
+/* Fix for buttons with no visible text */
+[data-testid="like"]::after {
+  content: "Like" !important;
+  margin-left: 4px !important;
+}
+
+[data-testid="retweet"]::after {
+  content: "Retweet" !important;
+  margin-left: 4px !important;
+}
+
+[data-testid="reply"]::after {
+  content: "Reply" !important;
+  margin-left: 4px !important;
+}
+
 /* ==========================================================================
    Content Prioritization
    ========================================================================== */
-/* Hide media by default, show on hover */
+/* Hide images by default, show on hover */
 [data-testid="tweetPhoto"] {
-  max-height: 100px !important;
-  overflow: hidden !important;
-  transition: max-height 0.2s ease !important;
+  opacity: 0.3 !important;
+  transition: opacity 0.2s ease !important;
+  max-height: 200px !important;
 }
 
 [data-testid="tweetPhoto"]:hover {
-  max-height: 300px !important;
+  opacity: 1 !important;
 }
 
-/* Collapse quote tweets */
+/* Compact nested tweets */
 [data-testid="tweet"] [data-testid="tweet"] {
-  margin-left: 16px !important;
-  padding: 8px !important;
+  margin-left: 20px !important;
   border-left: 2px solid var(--border-color) !important;
-  background: var(--background-secondary) !important;
+  padding-left: 12px !important;
 }
 
-/* Remove decorative elements */
+/* Hide decorative icons */
 [data-testid="tweet"] svg:not([aria-label]) {
   display: none !important;
 }
 
-/* Remove promotional content */
+/* Hide promoted content */
 [data-testid="promotedTweet"] {
   display: none !important;
 }
@@ -231,11 +282,10 @@ time, [data-testid="UserScreenName"] {
 /* ==========================================================================
    Responsive Design
    ========================================================================== */
-/* Desktop: Full width with sidebar */
 @media (min-width: 1024px) {
   [data-testid="primaryColumn"] {
     margin-left: 200px !important;
-    max-width: none !important;
+    width: calc(100% - 200px) !important;
   }
   
   [data-testid="sidebarColumn"] {
@@ -243,11 +293,10 @@ time, [data-testid="UserScreenName"] {
   }
 }
 
-/* Tablet: Compact layout */
 @media (max-width: 1023px) and (min-width: 768px) {
   [data-testid="primaryColumn"] {
     margin-left: 0 !important;
-    padding: 0 16px !important;
+    width: 100% !important;
   }
   
   [data-testid="sidebarColumn"] {
@@ -255,11 +304,10 @@ time, [data-testid="UserScreenName"] {
   }
 }
 
-/* Mobile: Minimal layout */
 @media (max-width: 767px) {
   [data-testid="primaryColumn"] {
     margin-left: 0 !important;
-    padding: 0 8px !important;
+    width: 100% !important;
   }
   
   [data-testid="tweet"] {
@@ -274,7 +322,6 @@ time, [data-testid="UserScreenName"] {
 /* ==========================================================================
    Accessibility Enhancements
    ========================================================================== */
-/* Clear focus indicators */
 [data-testid="tweet"]:focus,
 [data-testid="like"]:focus,
 [data-testid="retweet"]:focus,
@@ -283,17 +330,17 @@ time, [data-testid="UserScreenName"] {
   outline-offset: 2px !important;
 }
 
-/* Skip links */
+/* Skip links for keyboard navigation */
 .skip-link {
   position: absolute !important;
   top: -40px !important;
   left: 6px !important;
-  background: var(--text-primary) !important;
-  color: var(--background-primary) !important;
+  background: var(--accent-color) !important;
+  color: white !important;
   padding: 8px !important;
   text-decoration: none !important;
+  border-radius: 4px !important;
   z-index: 10000 !important;
-  font-family: var(--font-mono) !important;
 }
 
 .skip-link:focus {
@@ -308,8 +355,7 @@ time, [data-testid="UserScreenName"] {
 }
 
 .ux-fixer-compact {
-  padding: 4px !important;
-  margin: 0 !important;
+  padding: 8px 12px !important;
 }
 
 .ux-fixer-mono {
