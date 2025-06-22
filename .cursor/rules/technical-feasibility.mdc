@@ -191,43 +191,92 @@ This rule integrates with the error correction system:
 - Screenshots: `data/validation/feasibility/screenshots/`
 - Reports: `data/validation/feasibility/reports/`
 
-# Technical Feasibility Rules for UX Fixer Extensions
+# Technical Feasibility Rules for UX Fixer Extensions - MANDATORY ENFORCEMENT
 
 ## Purpose
-Prevent wasted effort on projects that are technically infeasible due to browser, CSP, or site restrictions. Ensure all critical technical risks are validated on the real target site before significant implementation, automation, or task planning.
+Prevent wasted effort on projects that are technically infeasible due to browser, CSP, or site restrictions. ENFORCE that all critical technical risks are validated on the real target site before ANY implementation, automation, or task planning.
 
-## Rules
-1. **Feasibility First:**
-   - No implementation, automation, or test framework work may begin until technical feasibility is proven on the real target site (not just on test pages).
-   - Feasibility must be demonstrated with a minimal working proof-of-concept (POC) that:
-     - Loads the extension on the real site
-     - Successfully injects and applies CSS/JS
-     - Modifies the DOM in a visible way
-     - Survives reloads and navigation events
-     - Is not blocked by CSP, site scripts, or browser restrictions
-2. **CSP and Script Execution:**
-   - Explicitly test for CSP restrictions, script execution, and DOM access on the real site as the first validation step.
-   - Document all CSP headers and any errors in the browser console.
-   - Attempt both file-based and direct JS/CSS injection.
-   - If any method is blocked, document the failure and escalate immediately.
-3. **Blocker Escalation:**
-   - If technical feasibility cannot be proven, the project must be paused and the issue escalated before any further work.
-   - No further implementation, automation, or planning is allowed until feasibility is resolved.
-4. **Task Planning:**
-   - All project plans, scratchpads, and task files must include a technical feasibility validation as the first step.
-   - No downstream tasks may be started until this step is marked complete.
-5. **Documentation:**
-   - All feasibility validation steps, results, and blockers must be documented in the project (in `tasks/human/validation/` and the scratchpad).
-   - If the project is found infeasible, document the reason and do not proceed with further work.
+## CRITICAL: MANDATORY ENFORCEMENT RULES
 
-## Enforcement
-- All new UX Fixer extension projects must follow these rules.
-- PRs and commits that skip feasibility validation or begin implementation before POC must be rejected.
-- Automated and manual reviews must check for a documented feasibility POC on the real target site.
+### 1. BLOCKING RULE - No Implementation Without POC
+**MANDATORY**: NO implementation, automation, test framework, or task planning work may begin until technical feasibility is proven on the REAL target site.
 
-## Rationale
+**ENFORCEMENT**: 
+- If feasibility is not proven, the agent MUST refuse to proceed with any implementation work
+- The agent MUST escalate and require user confirmation before proceeding
+- The agent MUST document the feasibility requirement in the scratchpad
+
+### 2. POC REQUIREMENTS - What Must Be Proven
+A minimal working proof-of-concept (POC) MUST demonstrate ALL of the following on the REAL target site:
+
+- [ ] Extension loads and executes without errors
+- [ ] Content script successfully injects and applies CSS/JS
+- [ ] DOM modifications are visible and persist
+- [ ] Changes survive page reloads and navigation
+- [ ] No CSP errors in browser console
+- [ ] Site's JavaScript doesn't immediately revert changes
+- [ ] Selectors successfully target intended elements
+- [ ] Extension functionality works across different pages/sections
+
+### 3. VALIDATION CHECKLIST - Must Complete Before Any Work
+Before ANY implementation work begins, the agent MUST:
+
+- [ ] Load the extension on the real target site
+- [ ] Check browser console for CSP errors
+- [ ] Attempt basic CSS injection and verify it works
+- [ ] Test basic DOM manipulation and verify it persists
+- [ ] Document all findings in `tasks/human/validation/01-technical-feasibility-poc.md`
+- [ ] Mark the POC task as complete only if ALL requirements are met
+
+### 4. BLOCKER ESCALATION - Mandatory Process
+If ANY of the POC requirements fail:
+
+1. **STOP ALL WORK IMMEDIATELY**
+2. **Document the failure** in the validation task
+3. **Escalate to user** with clear explanation of the blocker
+4. **Do not proceed** until the blocker is resolved or the project is abandoned
+5. **No further implementation, automation, or planning** is allowed
+
+### 5. TASK PLANNING ENFORCEMENT
+- The first task in EVERY project MUST be `01-technical-feasibility-poc.md`
+- This task MUST be marked complete before any other tasks can be started
+- The scratchpad MUST reference this task and its completion status
+- If the POC task fails, the project MUST be abandoned
+
+## ENFORCEMENT MECHANISMS
+
+### Agent Behavior Requirements
+- The agent MUST check for POC completion before starting any implementation work
+- The agent MUST refuse to proceed if POC is not complete
+- The agent MUST escalate to user if feasibility is in doubt
+- The agent MUST document all feasibility validation steps
+
+### Project Structure Requirements
+- Every project MUST have a `tasks/human/validation/01-technical-feasibility-poc.md` task
+- This task MUST be the first task created and completed
+- The scratchpad MUST track POC completion status
+- No other tasks may be started until POC is complete
+
+### Documentation Requirements
+- All feasibility validation must be documented in validation tasks
+- All failures must be documented with specific error messages
+- All POC attempts must be recorded with screenshots or console logs
+- Project abandonment must be documented if POC fails
+
+## RATIONALE
 - Prevents wasted effort on technically impossible projects
-- Surfaces critical blockers early
+- Surfaces critical blockers early before significant work begins
 - Ensures all work is grounded in real-world constraints
 - Saves time, resources, and developer frustration
+- Prevents the same mistakes from happening repeatedly
+
+## CONSEQUENCES OF VIOLATION
+If these rules are violated:
+- The project will likely fail due to technical limitations
+- Significant time and effort will be wasted
+- Developer frustration will increase
+- The same mistakes will be repeated
+
+## REMINDER
+These rules exist because we've already failed twice (FirstTechFed and X.com) due to not validating technical feasibility first. DO NOT make the same mistake again.
 
