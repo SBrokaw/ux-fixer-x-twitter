@@ -1,3 +1,42 @@
+# X.com UX Fixer Firefox Extension
+
+⚠️ **PROJECT ABANDONED**
+
+This project was abandoned due to technical limitations. X.com's Content Security Policy (CSP) and dynamic content loading make reliable UI transformation impossible from a browser extension. The site's strict security policies block or revert extension modifications, and the complex JavaScript framework immediately fights against any DOM transformations.
+
+**Project Status: ABANDONED ❌**
+
+## Reason for Abandonment
+
+The X.com website proved to be technically unsuitable for browser extension-based UI transformation due to:
+
+- **Content Security Policy**: Strict CSP blocks external CSS file injection and restricts script execution
+- **Dynamic Content Loading**: Site's JavaScript framework loads content dynamically, preventing reliable selector targeting
+- **Framework Interference**: Site's JavaScript immediately reverts any changes made by the extension
+- **Complex Event Handling**: Navigation and state management interfere with transformations
+- **Security Restrictions**: Modern web security practices make extension-based UI modification ineffective
+
+## Technical Limitations
+
+- CSP blocks external CSS file injection
+- Direct CSS injection via JavaScript is reverted by site scripts
+- Dynamic content loading prevents reliable selector targeting
+- Site's JavaScript framework actively reverts extension changes
+- Complex event handling and state management interfere with transformations
+
+## Lessons Learned
+
+- Technical feasibility must be validated on real target site before implementation
+- CSP restrictions can make browser extensions completely ineffective
+- Modern SPAs with strict security policies may be unsuitable for extension-based UI transformation
+- Proof-of-concept validation on the actual target site is critical before significant development work
+
+---
+
+**Note**: This project serves as a reference for technical feasibility validation and CSP investigation techniques. The technical feasibility rules developed here have been integrated into the project's rule system to prevent similar issues in future projects.
+
+---
+
 # X.com UX Fixer
 
 A Firefox extension designed to transform X.com (formerly Twitter) into a dense, efficient, text-based interface optimized for rapid content consumption.
