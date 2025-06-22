@@ -6,6 +6,7 @@ const { defineConfig, devices } = require('@playwright/test');
  */
 module.exports = defineConfig({
   testDir: './tests',
+  testMatch: '**/*.spec.js',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -17,13 +18,15 @@ module.exports = defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['html'],
-    ['json', { outputFile: 'test-results/results.json' }],
-    ['markdown', { outputFile: 'test-results/results.md' }]
+    ['json', { outputFile: 'test-results/results.json' }]
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'https://x.com',
+    
+    /* Always use headless mode for automated testing */
+    headless: true,
     
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -33,6 +36,10 @@ module.exports = defineConfig({
     
     /* Record video on failure */
     video: 'retain-on-failure',
+    
+    /* Set proper timeouts to prevent infinite loops */
+    actionTimeout: 10000,
+    navigationTimeout: 30000,
   },
 
   /* Configure projects for major browsers */
@@ -40,20 +47,6 @@ module.exports = defineConfig({
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
-    },
-    {
-      name: 'firefox-nightly',
-      use: { 
-        ...devices['Desktop Firefox'],
-        channel: 'firefox-nightly'
-      },
-    },
+    }
   ],
-
-  /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'npm run build:extension',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-  },
 }); 

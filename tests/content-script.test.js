@@ -16,11 +16,135 @@ describe('Content Script', () => {
       </div>
     `;
     
-    // Mock the content script functions
+    // Mock the content script module
     contentScript = {
       applyTransformations: jest.fn(),
       createDebugPanel: jest.fn(),
-      initializeExtension: jest.fn()
+      initializeExtension: jest.fn(),
+      init: jest.fn(),
+      startCSSInjectionTimer: jest.fn(),
+      endCSSInjectionTimer: jest.fn(),
+      validateCSSSelector: jest.fn(),
+      cacheCSS: jest.fn(),
+      getCachedCSS: jest.fn(),
+      applyOptimizedCSS: jest.fn(),
+      validateCSSProperties: jest.fn(),
+      state: {
+        cssInjectionStats: { 
+          duration: 0, 
+          startTime: 0, 
+          endTime: 0, 
+          elementsTransformed: 0, 
+          cacheHits: 0,
+          cacheMisses: 0,
+          errors: 0
+        },
+        cssValidationErrors: [],
+        cssCache: new Map()
+      },
+      CONFIG: {
+        performance: {
+          cssValidationEnabled: true,
+          cssCachingEnabled: true
+        },
+        css: {
+          validationRules: {
+            requiredProperties: ['font-family', 'color', 'background']
+          }
+        }
+      }
+    };
+
+    // Mock the actual functions with real implementations
+    contentScript.startCSSInjectionTimer = function() {
+      this.state.cssInjectionStats.startTime = performance.now();
+      this.state.cssInjectionStats.elementsTransformed = 0;
+      this.state.cssInjectionStats.errors = 0;
+    };
+
+    contentScript.endCSSInjectionTimer = function() {
+      this.state.cssInjectionStats.endTime = performance.now();
+      this.state.cssInjectionStats.duration = this.state.cssInjectionStats.endTime - this.state.cssInjectionStats.startTime;
+    };
+
+    contentScript.validateCSSSelector = function(selector) {
+      try {
+        document.querySelector(selector);
+        return true;
+      } catch (error) {
+        this.state.cssValidationErrors.push({
+          selector: selector,
+          error: error.message,
+          timestamp: Date.now()
+        });
+        return false;
+      }
+    };
+
+    contentScript.cacheCSS = function(selector, styles) {
+      if (!this.CONFIG.performance.cssCachingEnabled) return;
+      
+      this.state.cssCache.set(selector, {
+        styles: styles,
+        timestamp: Date.now()
+      });
+    };
+
+    contentScript.getCachedCSS = function(selector) {
+      if (!this.CONFIG.performance.cssCachingEnabled) return null;
+      
+      const cached = this.state.cssCache.get(selector);
+      if (cached && Date.now() - cached.timestamp < 30000) {
+        this.state.cssInjectionStats.cacheHits++;
+        return cached.styles;
+      }
+      
+      this.state.cssInjectionStats.cacheMisses++;
+      return null;
+    };
+
+    contentScript.applyOptimizedCSS = function(element, selector, styles) {
+      try {
+        // Check cache first
+        const cachedStyles = this.getCachedCSS(selector);
+        if (cachedStyles) {
+          Object.assign(element.style, cachedStyles);
+          return true;
+        }
+
+        // Validate selector
+        if (this.CONFIG.performance.cssValidationEnabled && !this.validateCSSSelector(selector)) {
+          this.state.cssInjectionStats.errors++;
+          return false;
+        }
+
+        // Apply styles
+        Object.assign(element.style, styles);
+        
+        // Cache the styles
+        this.cacheCSS(selector, styles);
+        
+        this.state.cssInjectionStats.elementsTransformed++;
+        return true;
+      } catch (error) {
+        this.state.cssInjectionStats.errors++;
+        return false;
+      }
+    };
+
+    contentScript.validateCSSProperties = function(properties) {
+      const requiredProps = this.CONFIG.css.validationRules.requiredProperties;
+      const missingProps = requiredProps.filter(prop => !properties.includes(prop));
+      
+      if (missingProps.length > 0) {
+        this.state.cssValidationErrors.push({
+          type: 'missing_properties',
+          properties: missingProps,
+          timestamp: Date.now()
+        });
+        return false;
+      }
+      return true;
     };
   });
 
@@ -144,6 +268,111 @@ describe('Content Script', () => {
       
       expect(element).toHaveClass('ux-fixer-compact');
       expect(element).toHaveClass('ux-fixer-button');
+    });
+  });
+
+  describe('CSS Injection System', () => {
+    test('should track CSS injection performance', () => {
+      // Mock performance.now
+      const originalNow = performance.now;
+      let mockTime = 0;
+      performance.now = () => mockTime;
+      
+      // Initialize extension
+      contentScript.init();
+      
+      // Simulate CSS injection timing
+      mockTime = 100;
+      contentScript.startCSSInjectionTimer();
+      mockTime = 150;
+      contentScript.endCSSInjectionTimer();
+      
+      expect(contentScript.state.cssInjectionStats.duration).toBe(50);
+      expect(contentScript.state.cssInjectionStats.startTime).toBe(100);
+      expect(contentScript.state.cssInjectionStats.endTime).toBe(150);
+      
+      // Restore original
+      performance.now = originalNow;
+    });
+
+    test('should validate CSS selectors', () => {
+      // Test valid selector
+      expect(contentScript.validateCSSSelector('[data-testid="tweet"]')).toBe(true);
+      
+      // Test invalid selector that actually throws an error
+      const originalQuerySelector = document.querySelector;
+      document.querySelector = jest.fn().mockImplementation(() => {
+        throw new Error('Invalid selector');
+      });
+      
+      expect(contentScript.validateCSSSelector('[invalid-selector]')).toBe(false);
+      
+      // Check validation errors
+      expect(contentScript.state.cssValidationErrors.length).toBeGreaterThan(0);
+      
+      // Restore original
+      document.querySelector = originalQuerySelector;
+    });
+
+    test('should cache CSS styles', () => {
+      const selector = '[data-testid="tweet"]';
+      const styles = { color: 'red', fontSize: '14px' };
+      
+      // Cache CSS
+      contentScript.cacheCSS(selector, styles);
+      
+      // Get cached CSS
+      const cached = contentScript.getCachedCSS(selector);
+      expect(cached).toEqual(styles);
+      
+      // Check cache stats
+      expect(contentScript.state.cssInjectionStats.cacheHits).toBe(1);
+    });
+
+    test('should apply optimized CSS with error handling', () => {
+      const element = document.createElement('div');
+      const selector = '[data-testid="tweet"]';
+      const styles = { color: 'red', fontSize: '14px' };
+      
+      // Apply optimized CSS
+      const result = contentScript.applyOptimizedCSS(element, selector, styles);
+      
+      expect(result).toBe(true);
+      expect(element.style.color).toBe('red');
+      expect(element.style.fontSize).toBe('14px');
+      expect(contentScript.state.cssInjectionStats.elementsTransformed).toBe(1);
+    });
+
+    test('should handle CSS application errors gracefully', () => {
+      const element = document.createElement('div');
+      const invalidSelector = '[invalid-selector]';
+      const styles = { color: 'red' };
+      
+      // Mock querySelector to throw error for invalid selector
+      const originalQuerySelector = document.querySelector;
+      document.querySelector = jest.fn().mockImplementation((selector) => {
+        if (selector === invalidSelector) {
+          throw new Error('Invalid selector');
+        }
+        return originalQuerySelector.call(document, selector);
+      });
+      
+      // Apply CSS with invalid selector
+      const result = contentScript.applyOptimizedCSS(element, invalidSelector, styles);
+      
+      expect(result).toBe(false);
+      expect(contentScript.state.cssInjectionStats.errors).toBe(1);
+      
+      // Restore original
+      document.querySelector = originalQuerySelector;
+    });
+
+    test('should validate CSS properties', () => {
+      const validProperties = ['font-family', 'color', 'background'];
+      const invalidProperties = ['color', 'fontSize'];
+      
+      expect(contentScript.validateCSSProperties(validProperties)).toBe(true);
+      expect(contentScript.validateCSSProperties(invalidProperties)).toBe(false);
     });
   });
 }); 

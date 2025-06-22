@@ -62,26 +62,31 @@
       max-height: 400px;
       background: #000;
       color: #fff;
+      padding: 10px;
       font-family: monospace;
       font-size: 12px;
-      padding: 10px;
-      border-radius: 5px;
       z-index: 10000;
       overflow-y: auto;
       border: 2px solid #ff0;
     `;
     
-    panel.innerHTML = `
-      <div style="font-weight: bold; margin-bottom: 10px; color: #ff0;">
-        🔍 UX Fixer Debug Panel
-      </div>
-      <div id="debug-content">
-        <div>Loading...</div>
-      </div>
-      <div style="margin-top: 10px; font-size: 10px; color: #888;">
-        Press Ctrl+Shift+D to refresh
-      </div>
-    `;
+    // Create debug panel header
+    const header = document.createElement('div');
+    header.style.cssText = 'font-weight: bold; margin-bottom: 10px; color: #ff0;';
+    header.textContent = '🔍 UX Fixer Debug Panel';
+    panel.appendChild(header);
+    
+    // Create debug content container
+    const content = document.createElement('div');
+    content.id = 'debug-content';
+    content.innerHTML = '<div>Loading...</div>';
+    panel.appendChild(content);
+    
+    // Create debug footer
+    const footer = document.createElement('div');
+    footer.style.cssText = 'margin-top: 10px; font-size: 10px; color: #888;';
+    footer.textContent = 'Press Ctrl+Shift+D to refresh';
+    panel.appendChild(footer);
     
     document.body.appendChild(panel);
   }
@@ -369,34 +374,53 @@
     const content = document.getElementById('debug-content');
     if (!content) return;
     
-    let html = '';
+    // Clear existing content
+    content.innerHTML = '';
     
     // Summary
     const totalIssues = Object.values(ISSUES).reduce((sum, issues) => sum + issues.length, 0);
-    html += `<div style="color: ${totalIssues > 0 ? '#ff6b6b' : '#6bff6b'}; margin-bottom: 10px;">
-      Issues Found: ${totalIssues}
-    </div>`;
+    const summary = document.createElement('div');
+    summary.style.cssText = `color: ${totalIssues > 0 ? '#ff6b6b' : '#6bff6b'}; margin-bottom: 10px;`;
+    summary.textContent = `Issues Found: ${totalIssues}`;
+    content.appendChild(summary);
     
     // Issues by category
     Object.entries(ISSUES).forEach(([category, issues]) => {
       if (issues.length > 0) {
-        html += `<div style="margin-bottom: 8px;">
-          <div style="color: #ff6b6b; font-weight: bold;">${category}: ${issues.length}</div>
-          ${issues.slice(0, 3).map(issue => `
-            <div style="color: #ffa; font-size: 10px; margin-left: 10px;">
-              ${issue.message}
-            </div>
-          `).join('')}
-          ${issues.length > 3 ? `<div style="color: #888; font-size: 10px; margin-left: 10px;">... and ${issues.length - 3} more</div>` : ''}
-        </div>`;
+        const categoryDiv = document.createElement('div');
+        categoryDiv.style.cssText = 'margin-bottom: 8px;';
+        
+        const categoryHeader = document.createElement('div');
+        categoryHeader.style.cssText = 'color: #ff6b6b; font-weight: bold;';
+        categoryHeader.textContent = `${category}: ${issues.length}`;
+        categoryDiv.appendChild(categoryHeader);
+        
+        // Add first 3 issues
+        issues.slice(0, 3).forEach(issue => {
+          const issueDiv = document.createElement('div');
+          issueDiv.style.cssText = 'color: #ffa; font-size: 10px; margin-left: 10px;';
+          issueDiv.textContent = issue.message;
+          categoryDiv.appendChild(issueDiv);
+        });
+        
+        // Add "more" indicator if needed
+        if (issues.length > 3) {
+          const moreDiv = document.createElement('div');
+          moreDiv.style.cssText = 'color: #888; font-size: 10px; margin-left: 10px;';
+          moreDiv.textContent = `... and ${issues.length - 3} more`;
+          categoryDiv.appendChild(moreDiv);
+        }
+        
+        content.appendChild(categoryDiv);
       }
     });
     
     if (totalIssues === 0) {
-      html += '<div style="color: #6bff6b;">✅ No issues detected</div>';
+      const noIssues = document.createElement('div');
+      noIssues.style.cssText = 'color: #6bff6b;';
+      noIssues.textContent = '✅ No issues detected';
+      content.appendChild(noIssues);
     }
-    
-    content.innerHTML = html;
   }
 
   /**

@@ -3,11 +3,17 @@ description:
 globs: 
 alwaysApply: true
 ---
-# Task Planning and Organization Standards
+# Autonomous Task Progression Rule
+
+- The agent must never ask for user confirmation before proceeding with next steps unless a rule, spec, or blocking error requires it.
+- The agent should always reference the AI scratchpad and project phase to determine next actions autonomously.
+- If a task is blocked, the agent must document the reason and propose a solution or escalate only if absolutely necessary.
+
+# Task Planning and Organization Standards - Firefox Extension Project
 
 ## Description
 
-This rule ensures effective task planning and progress tracking using the `tasks/ai/scratchpad.md` file as a scratchpad. The scratchpad serves as a central place for AI task organization, planning, and reflection. It also defines the structure and content requirements for human-in-the-loop tasks.
+This rule ensures effective task planning and progress tracking for the X.com UX Fixer Firefox extension project. It defines the structure and content requirements for both AI and human-in-the-loop tasks, with specific focus on extension development, testing, and deployment phases.
 
 ## Rule
 
@@ -29,7 +35,7 @@ When managing AI tasks:
 **BEFORE creating any new human task, you MUST:**
 
 1. **Check for existing tasks** - Search for similar tasks to avoid duplicates
-2. **Verify directory structure** - Ensure task goes in correct category (validation/clarity/visual)
+2. **Verify directory structure** - Ensure task goes in correct category (validation/implementation/testing/deployment)
 3. **Use sequential numbering** - Tasks must be numbered `01-`, `02-`, `03-` etc. in each category
 4. **Update README.md** - Always update `tasks/human/README.md` when adding/removing tasks
 5. **No orphaned tasks** - NEVER create tasks at the root level of `/tasks/human/`
@@ -37,8 +43,9 @@ When managing AI tasks:
 
 **MANDATORY CHECKS BEFORE CREATING TASKS:**
 - [ ] Check `tasks/human/validation/` for existing similar tasks
-- [ ] Check `tasks/human/clarity/` for existing similar tasks  
-- [ ] Check `tasks/human/visual/` for existing similar tasks
+- [ ] Check `tasks/human/implementation/` for existing similar tasks  
+- [ ] Check `tasks/human/testing/` for existing similar tasks
+- [ ] Check `tasks/human/deployment/` for existing similar tasks
 - [ ] Check root level for orphaned tasks that need to be moved
 - [ ] Verify next available number in target category
 - [ ] Plan README.md update
@@ -56,15 +63,16 @@ When managing AI tasks:
 **NEVER create ALLCAPS.md files at the root level. All documentation must be properly organized:**
 
 1. **Documentation Files** - Must go in `docs/` directory:
-   - `docs/testing-guide.md` (not `TESTING_GUIDE.md`)
+   - `docs/testing-framework.md` (not `TESTING_FRAMEWORK.md`)
+   - `docs/quick-start-testing.md` (not `QUICK_START.md`)
    - `docs/troubleshooting.md` (not `TROUBLESHOOTING.md`)
    - `docs/issue-report-template.md` (not `ISSUE_REPORT_TEMPLATE.md`)
-   - `docs/first-pass-summary.md` (not `FIRST_PASS_SUMMARY.md`)
 
 2. **Specification Files** - Must go in `specs/` directory:
    - `specs/technical-architecture.md`
    - `specs/testing-validation.md`
    - `specs/content-consumption-patterns.md`
+   - `specs/css-styling-strategy.md`
 
 3. **Task Files** - Must go in `tasks/` directory:
    - `tasks/ai/scratchpad.md`
@@ -109,28 +117,38 @@ When managing AI tasks:
 - Next Steps: [List of next actions]
 ```
 
-## Human Task Structure
+## Human Task Structure - Firefox Extension Specific
 
-The `/tasks/human/` directory MUST be organized into three priority-based categories:
+The `/tasks/human/` directory MUST be organized into four priority-based categories:
 
 ### 1. Validation Tasks (`validation/`)
-- **Purpose**: Verify core demo assumptions and technical requirements
+- **Purpose**: Verify core extension assumptions and technical requirements
 - **Priority**: HIGH - These tasks block further development
-- **Requirements**: Real equipment, measurements, and data collection
+- **Requirements**: Firefox browser, X.com account, developer tools, extension testing
 - **Naming**: `01-task-name.md`, `02-task-name.md`, etc.
 - **Status Tracking**: Must include Not Started/In Progress/Complete/Blocked
+- **Examples**: Extension loading, CSP analysis, DOM structure analysis, framework detection
 
-### 2. Clarity Tasks (`clarity/`)
-- **Purpose**: Support talking points with quantitative data and analysis
-- **Priority**: MEDIUM - Enhance demo effectiveness and communication
-- **Requirements**: Data analysis, frequency response measurements, noise quantification
+### 2. Implementation Tasks (`implementation/`)
+- **Purpose**: Core extension development and feature implementation
+- **Priority**: HIGH - Core development work
+- **Requirements**: Development environment, code editor, testing framework
 - **Naming**: `01-task-name.md`, `02-task-name.md`, etc.
+- **Examples**: Content script development, CSS styling, manifest configuration, background scripts
 
-### 3. Visual Tasks (`visual/`)
-- **Purpose**: Create diagrams, photos, and visual aids for communication
-- **Priority**: MEDIUM - Improve presentation and documentation
-- **Requirements**: Schematics, setup photography, frequency plots, visual documentation
+### 3. Testing Tasks (`testing/`)
+- **Purpose**: Comprehensive testing and quality assurance
+- **Priority**: HIGH - Ensure extension reliability and functionality
+- **Requirements**: Testing framework, multiple Firefox versions, CI/CD setup
 - **Naming**: `01-task-name.md`, `02-task-name.md`, etc.
+- **Examples**: Unit testing, integration testing, performance testing, accessibility testing
+
+### 4. Deployment Tasks (`deployment/`)
+- **Purpose**: Extension packaging, signing, and distribution
+- **Priority**: MEDIUM - Final steps for user distribution
+- **Requirements**: Mozilla Add-ons account, signing certificates, distribution channels
+- **Naming**: `01-task-name.md`, `02-task-name.md`, etc.
+- **Examples**: Extension signing, store submission, documentation updates, release management
 
 ## Human Task File Format
 
@@ -181,23 +199,25 @@ tasks/
 ├── human/
 │   ├── README.md              # Human task overview and priorities
 │   ├── validation/            # High priority - core assumptions
-│   ├── clarity/               # Medium priority - quantitative support
-│   └── visual/                # Medium priority - visual aids
+│   ├── implementation/        # High priority - core development
+│   ├── testing/               # High priority - quality assurance
+│   └── deployment/            # Medium priority - distribution
 ├── templates/
 │   ├── task-template.md       # Standard task format
-│   └── data-collection-template.md
+│   └── validation-template.md
 └── timeline-management.md     # Project timeline and deadlines
 
 docs/
-├── testing-guide.md           # Testing procedures and solutions
+├── testing-framework.md       # Testing procedures and solutions
+├── quick-start-testing.md     # Quick start guide
 ├── troubleshooting.md         # Debugging and problem resolution
-├── issue-report-template.md   # Standardized issue reporting
-└── first-pass-summary.md      # Project milestone summaries
+└── issue-report-template.md   # Standardized issue reporting
 
 specs/
 ├── technical-architecture.md  # Technical specifications
 ├── testing-validation.md      # Testing framework specs
-└── content-consumption-patterns.md # UX patterns
+├── content-consumption-patterns.md # UX patterns
+└── css-styling-strategy.md    # CSS implementation strategy
 ```
 
 ## Human Task README Requirements
@@ -205,79 +225,134 @@ specs/
 The `tasks/human/README.md` MUST include:
 
 1. **Current Priorities Section** with:
-   - High priority tasks listed first
+   - High priority tasks listed first by category
    - Status, time estimates, and dependencies
    - Clear priority indicators (🔴 HIGH, 🟡 MEDIUM, 🟢 LOW)
+   - Progress tracking for each task
 
 2. **Task Categories Section** explaining:
-   - Purpose of each category (validation/clarity/visual)
+   - Purpose of each category (validation/implementation/testing/deployment)
    - Priority levels and dependencies
    - Typical requirements and outputs
+   - Current status of each category
 
 3. **Getting Started Section** with:
    - How to check priorities
    - How to use templates
    - Where to store data
    - How to update status
+   - Development environment setup
 
 4. **Status Legend** defining:
    - Not Started, In Progress, Complete, Blocked
    - Clear criteria for each status
 
+## Current Project Phase Requirements
+
+### Phase 1: Foundation ✅ (COMPLETED)
+- [x] Technical architecture specification
+- [x] Firefox extension structure
+- [x] Automated testing framework
+- [x] Basic manifest.json setup
+- [x] X.com DOM structure analysis
+
+### Phase 2: Core Implementation 🔄 (CURRENT)
+- [ ] Content script development
+- [ ] CSS injection system
+- [ ] Feed transformation logic
+- [ ] Navigation optimization
+- [ ] Debug panel implementation
+
+### Phase 3: Testing & Validation 📋 (NEXT)
+- [ ] Unit test implementation
+- [ ] Integration test validation
+- [ ] Performance testing
+- [ ] Cross-browser compatibility
+- [ ] User experience validation
+
+### Phase 4: Deployment & Distribution 🚀 (FUTURE)
+- [ ] Extension signing
+- [ ] Store submission
+- [ ] Documentation completion
+- [ ] Release management
+
+## Task Priority Matrix
+
+### 🔴 CRITICAL (Block Development)
+- Extension loading and basic functionality
+- Content script injection and execution
+- CSP compliance and security
+- Core CSS transformations
+
+### 🟡 HIGH (Enable Features)
+- Advanced styling and animations
+- Performance optimization
+- Accessibility improvements
+- Cross-browser compatibility
+
+### 🟢 MEDIUM (Enhance Experience)
+- User interface polish
+- Additional features
+- Documentation improvements
+- Community engagement
+
 ## Examples
 
 ✅ Correct AI Scratchpad:
 ```markdown
-# Current Task: Ground Loop Demo Documentation
+# Current Task: Content Script Development
 
 ## Description
-Create comprehensive documentation and data collection framework for the Ground Loop Demo.
+Implement the core content script for X.com UX transformation with CSS injection and DOM manipulation.
 
 ## Plan
-[ ] Create initial specs structure
-[ ] Define style guide
-[ ] Set up task tracking system
+[ ] Set up content script structure
+[ ] Implement CSS injection system
+[ ] Add DOM transformation logic
+[ ] Test with X.com page
 
 ## Progress
-[X] Create initial specs structure
-[X] Define style guide
+[X] Set up content script structure
+[X] Implement CSS injection system
 
 ## Reflections
-### Milestone: Initial Setup
-- Accomplished: Basic documentation structure created
-- Challenges: Initially placed task tracking in wrong location
-- Improvements: Need proper task tracking system
-- Next Steps: Create tasks/ directory structure
+### Milestone: Core Implementation
+- Accomplished: Basic content script framework created
+- Challenges: CSP restrictions on X.com
+- Improvements: Need better error handling
+- Next Steps: Implement DOM transformation logic
 ```
 
 ✅ Correct Human Task:
 ```markdown
-# Task: Demo Board Baseline Validation
+# Task: Extension Loading Validation
 Priority: High
-Estimated Time: 2-3 hours
-Dependencies: Demo board, oscilloscope, cables, signal generator
+Estimated Time: 1-2 hours
+Dependencies: Built extension, Firefox browser, X.com account
 Status: Not Started
 
 ## Objective
-Validate that the demo board produces expected noise levels to establish baseline measurements.
+Verify that the extension loads properly in Firefox and can inject content scripts into X.com pages.
 
 ## Steps
-1. [ ] Set up demo board with oscilloscope
-2. [ ] Measure baseline noise without TICP
-3. [ ] Document noise characteristics
+1. [ ] Install extension in Firefox
+2. [ ] Navigate to X.com home page
+3. [ ] Check console for errors
+4. [ ] Verify content script execution
 
 ## Data Collection
-- Location: data/validation/
-- Format: Screenshots, measurements, notes
-- Validation: Noise levels match expected specifications
+- Location: tasks/human/validation/
+- Format: Screenshots, console logs, error reports
+- Validation: Extension loads without errors, content script executes
 
 ## Success Criteria
-- [ ] Baseline noise measured and documented
-- [ ] Measurements repeatable and consistent
-- [ ] Data stored in proper format
+- [ ] Extension installs successfully
+- [ ] No console errors on X.com
+- [ ] Content script loads and executes
+- [ ] Basic transformations visible
 
 ## Notes
-Critical for establishing demo effectiveness baseline.
+Critical for establishing development baseline.
 
 ## Progress Updates
 ### [Date] - [Duration]
@@ -299,10 +374,10 @@ Status: Not Started
 
 ❌ **INCORRECT - ALLCAPS Documentation:**
 Creating `TESTING_GUIDE.md` at root level
-**Problem**: Should be `docs/testing-guide.md` with lowercase filename
+**Problem**: Should be `docs/testing-framework.md` with lowercase filename
 
 ❌ **INCORRECT - Duplicate Task:**
-Creating `03-extension-debugging.md` when `03-extension-manual-verification.md` already exists
+Creating `03-extension-debugging.md` when `03-csp-analysis.md` already exists
 **Problem**: Should merge similar tasks instead of creating duplicates
 
 ## File Organization
@@ -313,3 +388,35 @@ Creating `03-extension-debugging.md` when `03-extension-manual-verification.md` 
 - Specification files: `specs/`
 - Templates: `tasks/templates/`
 - Scratchpad: `tasks/ai/scratchpad.md`
+
+# Build Directory Structure Rules for Extension Packaging
+
+## Purpose
+Ensure the Firefox extension build process always produces the correct directory structure, with all scripts, styles, and icons in their respective subdirectories, and no misplaced files in the build root. Prevents extension loading errors and streamlines packaging for distribution and testing.
+
+## Rules
+1. The build directory (`build/`) must only contain:
+   - `manifest.json` (at root)
+   - `scripts/` (all JS files)
+   - `styles/` (all CSS files)
+   - `icons/` (all icon files)
+2. No JS, CSS, or image files may exist at the root of `build/` except `manifest.json`.
+3. The build script must:
+   - Clean the build directory before each build
+   - Copy files into their correct subdirectories
+   - Remove any misplaced files from the build root
+   - Zip the build directory for distribution
+4. The manifest must reference all scripts, styles, and icons using their subdirectory paths (e.g., `scripts/content.js`, `styles/content.css`).
+5. All extension loading and testing must use the `build/` directory, not the project root.
+6. Any changes to the build process must be reflected in this rule and in `build.sh`.
+
+## Enforcement
+- All PRs and commits that modify the build process or manifest must be checked for compliance with these rules.
+- Automated tests or CI should fail if misplaced files are detected in `build/`.
+- Manual validation is required after any build script or manifest change.
+
+## Rationale
+- Prevents extension loading errors in Firefox due to missing or misplaced files
+- Ensures consistency between development, testing, and distribution
+- Reduces user confusion and support issues
+- Streamlines future automation and CI/CD integration

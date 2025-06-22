@@ -36,7 +36,19 @@
     },
     performance: {
       observerThrottle: 100,
-      mutationThrottle: 50
+      mutationThrottle: 50,
+      cssInjectionTimeout: 5000,
+      cssValidationEnabled: true,
+      cssCachingEnabled: true
+    },
+    css: {
+      version: '1.0.0',
+      cacheKey: 'ux-fixer-css-cache',
+      validationRules: {
+        maxSelectorLength: 100,
+        maxImportantDeclarations: 50,
+        requiredProperties: ['font-family', 'color', 'background']
+      }
     }
   };
 
@@ -46,7 +58,18 @@
     observerActive: false,
     performanceMode: false,
     debugMode: false,
-    debugPanel: null
+    debugPanel: null,
+    cssInjectionStats: {
+      startTime: 0,
+      endTime: 0,
+      duration: 0,
+      elementsTransformed: 0,
+      errors: 0,
+      cacheHits: 0,
+      cacheMisses: 0
+    },
+    cssCache: new Map(),
+    cssValidationErrors: []
   };
 
   /**
@@ -56,6 +79,16 @@
     if (state.isApplied) return;
     
     log('Initializing X.com UX Fixer...');
+    
+    // Add immediate visual feedback to verify script is running
+    addVisualFeedback();
+    
+    // Inject CSS directly via JavaScript to bypass CSP issues
+    injectCSSDirectly();
+    
+    // Start CSS injection performance monitoring
+    startCSSInjectionTimer();
+    monitorCSSPerformance();
     
     // Wait for DOM to be ready
     if (document.readyState === 'loading') {
@@ -136,15 +169,32 @@
     // Add our extension status
     const extensionStatus = document.createElement('div');
     extensionStatus.style.cssText = 'margin-top: 10px; padding: 5px; background: #333; border-radius: 3px;';
-    extensionStatus.innerHTML = `
-      <div style="color: #6bff6b; font-weight: bold;">UX Fixer Status</div>
-      <div style="color: #ffa; font-size: 10px;">
-        Applied: ${state.isApplied ? 'Yes' : 'No'}<br>
-        Performance Mode: ${state.performanceMode ? 'On' : 'Off'}<br>
-        Tweets Transformed: ${document.querySelectorAll(CONFIG.selectors.tweets).length}<br>
-        Buttons Transformed: ${document.querySelectorAll(`${CONFIG.selectors.likeButton}, ${CONFIG.selectors.retweetButton}, ${CONFIG.selectors.replyButton}`).length}
-      </div>
-    `;
+    
+    // Create status header
+    const statusHeader = document.createElement('div');
+    statusHeader.style.cssText = 'color: #6bff6b; font-weight: bold;';
+    statusHeader.textContent = 'UX Fixer Status';
+    extensionStatus.appendChild(statusHeader);
+    
+    // Create status details
+    const statusDetails = document.createElement('div');
+    statusDetails.style.cssText = 'color: #ffa; font-size: 10px;';
+    statusDetails.textContent = `Applied: ${state.isApplied ? 'Yes' : 'No'}\nPerformance Mode: ${state.performanceMode ? 'On' : 'Off'}\nTweets Transformed: ${document.querySelectorAll(CONFIG.selectors.tweets).length}\nButtons Transformed: ${document.querySelectorAll(`${CONFIG.selectors.likeButton}, ${CONFIG.selectors.retweetButton}, ${CONFIG.selectors.replyButton}`).length}`;
+    extensionStatus.appendChild(statusDetails);
+    
+    // Add CSS performance stats
+    const cssStats = document.createElement('div');
+    cssStats.style.cssText = 'color: #ffa; font-size: 10px; margin-top: 5px;';
+    cssStats.textContent = `CSS Injection: ${state.cssInjectionStats.duration.toFixed(2)}ms\nElements: ${state.cssInjectionStats.elementsTransformed}\nCache: ${state.cssInjectionStats.cacheHits}/${state.cssInjectionStats.cacheHits + state.cssInjectionStats.cacheMisses}\nErrors: ${state.cssInjectionStats.errors}`;
+    extensionStatus.appendChild(cssStats);
+    
+    // Add CSS validation errors if any
+    if (state.cssValidationErrors.length > 0) {
+      const cssErrors = document.createElement('div');
+      cssErrors.style.cssText = 'color: #ff6b6b; font-size: 10px; margin-top: 5px;';
+      cssErrors.textContent = `CSS Errors: ${state.cssValidationErrors.length}`;
+      extensionStatus.appendChild(cssErrors);
+    }
     
     debugContent.appendChild(extensionStatus);
   }
@@ -164,6 +214,9 @@
     
     // Add skip links for accessibility
     addSkipLinks();
+    
+    // End CSS injection performance monitoring
+    endCSSInjectionTimer();
     
     // Update debug panel
     if (state.debugPanel) {
@@ -546,5 +599,377 @@
     toggleDebugMode,
     state: () => ({ ...state })
   };
+
+  /**
+   * CSS Injection Performance Monitoring
+   */
+  function startCSSInjectionTimer() {
+    state.cssInjectionStats.startTime = performance.now();
+    state.cssInjectionStats.elementsTransformed = 0;
+    state.cssInjectionStats.errors = 0;
+  }
+
+  function endCSSInjectionTimer() {
+    state.cssInjectionStats.endTime = performance.now();
+    state.cssInjectionStats.duration = state.cssInjectionStats.endTime - state.cssInjectionStats.startTime;
+    
+    if (state.debugMode) {
+      log(`CSS injection completed in ${state.cssInjectionStats.duration.toFixed(2)}ms`);
+      log(`Elements transformed: ${state.cssInjectionStats.elementsTransformed}`);
+      log(`Cache hits: ${state.cssInjectionStats.cacheHits}, misses: ${state.cssInjectionStats.cacheMisses}`);
+    }
+  }
+
+  /**
+   * CSS Validation and Error Handling
+   */
+  function validateCSSSelector(selector) {
+    try {
+      // Test if selector is valid
+      document.querySelector(selector);
+      return true;
+    } catch (error) {
+      state.cssValidationErrors.push({
+        selector: selector,
+        error: error.message,
+        timestamp: Date.now()
+      });
+      return false;
+    }
+  }
+
+  function validateCSSProperties(properties) {
+    const requiredProps = CONFIG.css.validationRules.requiredProperties;
+    const missingProps = requiredProps.filter(prop => !properties.includes(prop));
+    
+    if (missingProps.length > 0) {
+      state.cssValidationErrors.push({
+        type: 'missing_properties',
+        properties: missingProps,
+        timestamp: Date.now()
+      });
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * CSS Caching System
+   */
+  function getCachedCSS(selector) {
+    if (!CONFIG.performance.cssCachingEnabled) return null;
+    
+    const cached = state.cssCache.get(selector);
+    if (cached && Date.now() - cached.timestamp < 30000) { // 30 second cache
+      state.cssInjectionStats.cacheHits++;
+      return cached.styles;
+    }
+    
+    state.cssInjectionStats.cacheMisses++;
+    return null;
+  }
+
+  function cacheCSS(selector, styles) {
+    if (!CONFIG.performance.cssCachingEnabled) return;
+    
+    state.cssCache.set(selector, {
+      styles: styles,
+      timestamp: Date.now()
+    });
+  }
+
+  /**
+   * Optimized CSS Application
+   */
+  function applyOptimizedCSS(element, selector, styles) {
+    try {
+      // Check cache first
+      const cachedStyles = getCachedCSS(selector);
+      if (cachedStyles) {
+        Object.assign(element.style, cachedStyles);
+        return true;
+      }
+
+      // Validate selector
+      if (CONFIG.performance.cssValidationEnabled && !validateCSSSelector(selector)) {
+        state.cssInjectionStats.errors++;
+        return false;
+      }
+
+      // Apply styles with error handling
+      const styleProperties = Object.keys(styles);
+      if (CONFIG.performance.cssValidationEnabled && !validateCSSProperties(styleProperties)) {
+        state.cssInjectionStats.errors++;
+        return false;
+      }
+
+      // Apply styles
+      Object.assign(element.style, styles);
+      
+      // Cache the styles
+      cacheCSS(selector, styles);
+      
+      state.cssInjectionStats.elementsTransformed++;
+      return true;
+    } catch (error) {
+      state.cssInjectionStats.errors++;
+      log(`CSS application error for ${selector}:`, error);
+      return false;
+    }
+  }
+
+  /**
+   * CSS Performance Monitoring
+   */
+  function monitorCSSPerformance() {
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (entry.name.includes('CSS') || entry.name.includes('style')) {
+          if (state.debugMode) {
+            log(`CSS performance: ${entry.name} took ${entry.duration.toFixed(2)}ms`);
+          }
+        }
+      }
+    });
+    
+    try {
+      observer.observe({ entryTypes: ['measure', 'paint'] });
+    } catch (error) {
+      log('CSS performance monitoring not supported:', error);
+    }
+  }
+
+  /**
+   * Add immediate visual feedback to verify script execution
+   */
+  function addVisualFeedback() {
+    // Create a visible indicator that the script is running
+    const indicator = document.createElement('div');
+    indicator.id = 'ux-fixer-indicator';
+    indicator.style.cssText = `
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #1da1f2;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      z-index: 10000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    `;
+    indicator.textContent = 'UX Fixer Active';
+    
+    // Add to page
+    document.body.appendChild(indicator);
+    
+    // Remove after 5 seconds
+    setTimeout(() => {
+      if (indicator.parentNode) {
+        indicator.parentNode.removeChild(indicator);
+      }
+    }, 5000);
+    
+    log('Visual feedback indicator added');
+  }
+
+  /**
+   * Inject CSS directly via JavaScript to bypass CSP issues
+   */
+  function injectCSSDirectly() {
+    const css = `
+      /* X.com UX Fixer - Direct CSS Injection */
+      
+      /* Critical Performance Optimizations */
+      * {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+      }
+      
+      /* Essential transitions only */
+      [data-testid="like"]:hover,
+      [data-testid="retweet"]:hover,
+      [data-testid="reply"]:hover {
+        transition: background-color 0.1s ease !important;
+      }
+      
+      /* Main Feed Container */
+      [data-testid="primaryColumn"] {
+        max-width: none !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: #ffffff !important;
+        will-change: scroll-position !important;
+        transform: translateZ(0) !important;
+        backface-visibility: hidden !important;
+      }
+      
+      /* Remove decorative backgrounds */
+      [data-testid="primaryColumn"] > div {
+        background: none !important;
+        box-shadow: none !important;
+      }
+      
+      /* Tweet Container */
+      [data-testid="tweet"] {
+        padding: 8px 12px !important;
+        margin: 0 !important;
+        border-bottom: 1px solid #e1e8ed !important;
+        background: transparent !important;
+        contain: layout style paint !important;
+        position: relative !important;
+        z-index: 1 !important;
+        overflow: visible !important;
+      }
+      
+      /* Tweet Layout */
+      [data-testid="tweet"] article {
+        display: grid !important;
+        grid-template-columns: auto 1fr auto !important;
+        gap: 8px !important;
+        align-items: start !important;
+        position: relative !important;
+        overflow: visible !important;
+      }
+      
+      /* Tweet Content */
+      [data-testid="tweet"] > div {
+        padding: 0 !important;
+        margin: 0 !important;
+        position: relative !important;
+        overflow: visible !important;
+      }
+      
+      /* Tweet Text */
+      [data-testid="tweetText"] {
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+        font-size: 14px !important;
+        line-height: 1.4 !important;
+        color: #000000 !important;
+        font-weight: 400 !important;
+        margin: 4px 0 8px 0 !important;
+        padding: 0 !important;
+        display: block !important;
+        overflow: visible !important;
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        min-height: 1em !important;
+        position: relative !important;
+        z-index: 2 !important;
+        max-width: 100% !important;
+      }
+      
+      /* Username */
+      [data-testid="User-Name"] {
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        color: #000000 !important;
+        margin: 0 0 2px 0 !important;
+        padding: 0 !important;
+        display: block !important;
+        position: relative !important;
+        z-index: 2 !important;
+        overflow: visible !important;
+        white-space: nowrap !important;
+        text-overflow: ellipsis !important;
+      }
+      
+      /* Timestamps and Screen Names */
+      time, [data-testid="UserScreenName"] {
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+        font-size: 12px !important;
+        color: #657786 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: inline-block !important;
+        position: relative !important;
+        z-index: 2 !important;
+        overflow: visible !important;
+      }
+      
+      /* Navigation Sidebar */
+      [data-testid="sidebarColumn"] {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        height: 100vh !important;
+        width: 200px !important;
+        background: #ffffff !important;
+        border-right: 1px solid #e1e8ed !important;
+        z-index: 1000 !important;
+      }
+      
+      /* Navigation Links */
+      [data-testid="AppTabBar"] a {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding: 12px 16px !important;
+        color: #000000 !important;
+        text-decoration: none !important;
+        font-weight: 500 !important;
+        border-radius: 0 !important;
+        transition: background-color 0.1s ease !important;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+        font-size: 14px !important;
+      }
+      
+      [data-testid="AppTabBar"] a:hover {
+        background: #f7f9fa !important;
+      }
+      
+      /* Action Buttons */
+      [data-testid="like"], [data-testid="retweet"], [data-testid="reply"], [data-testid="bookmark"], [data-testid="share"] {
+        background: transparent !important;
+        border: none !important;
+        padding: 8px !important;
+        margin: 0 4px !important;
+        border-radius: 4px !important;
+        cursor: pointer !important;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+        font-size: 12px !important;
+        color: #657786 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        min-width: auto !important;
+        width: auto !important;
+        height: auto !important;
+      }
+      
+      /* Hide promotional content */
+      [data-testid="promotedTweet"] {
+        display: none !important;
+      }
+      
+      /* Responsive Design */
+      @media (max-width: 767px) {
+        [data-testid="primaryColumn"] {
+          width: 100% !important;
+          margin-left: 0 !important;
+        }
+        
+        [data-testid="tweet"] {
+          padding: 6px 8px !important;
+        }
+        
+        [data-testid="tweetText"] {
+          font-size: 13px !important;
+        }
+      }
+    `;
+    
+    const style = document.createElement('style');
+    style.id = 'ux-fixer-direct-css';
+    style.textContent = css;
+    document.head.appendChild(style);
+    
+    log('CSS injected directly via JavaScript');
+  }
 
 })(); 

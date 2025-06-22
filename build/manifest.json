@@ -12,7 +12,10 @@
   
   "host_permissions": [
     "https://x.com/*",
-    "https://twitter.com/*"
+    "https://twitter.com/*",
+    "file:///*",
+    "http://localhost/*",
+    "http://127.0.0.1/*"
   ],
   
   "background": {
@@ -23,7 +26,10 @@
     {
       "matches": [
         "https://x.com/*",
-        "https://twitter.com/*"
+        "https://twitter.com/*",
+        "file:///*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
       ],
       "css": ["styles/content.css"],
       "js": ["scripts/debug.js", "scripts/content.js"],
@@ -38,7 +44,10 @@
       "resources": ["styles/*", "scripts/*"],
       "matches": [
         "https://x.com/*",
-        "https://twitter.com/*"
+        "https://twitter.com/*",
+        "file:///*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
       ]
     }
   ],
@@ -52,6 +61,12 @@
     "96": "icons/icon-96.png"
   },
   
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "x-com-ux-fixer@github.com"
+    }
+  },
+  
   "author": "UX Fixer Team",
-  "homepage_url": "https://github.com/your-username/x-twitter-home"
+  "homepage_url": "https://github.com/sbrokaw/x-twitter-home-ux-fixer"
 } 

@@ -1,5 +1,8 @@
 // Jest setup file for X.com UX Fixer Extension tests
 
+// Import Jest DOM matchers
+import '@testing-library/jest-dom';
+
 // Mock browser APIs that are not available in jsdom
 global.browser = {
   runtime: {

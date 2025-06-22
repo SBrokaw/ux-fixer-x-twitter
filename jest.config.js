@@ -4,11 +4,10 @@ module.exports = {
   
   // The glob patterns Jest uses to detect test files
   testMatch: [
-    '**/tests/**/*.test.js',
-    '**/tests/**/*.spec.js'
+    '**/tests/**/*.test.js'
   ],
   
-  // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
+  // Exclude Playwright test files from Jest
   testPathIgnorePatterns: [
     '/node_modules/',
     '/test-results/'
@@ -57,5 +56,15 @@ module.exports = {
   clearMocks: true,
   
   // Indicates whether each individual test should be reported during the run
-  verbose: true
+  verbose: true,
+  
+  // Transform configuration for ES modules
+  transform: {
+    '^.+\\.js$': 'babel-jest'
+  },
+  
+  // Module name mapping
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/$1'
+  }
 }; 

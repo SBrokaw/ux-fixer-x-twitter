@@ -1,9 +1,10 @@
-/* X.com UX Fixer - Content Styles */
+/* X.com UX Fixer - Content Styles v1.0.0 */
 
 /* ==========================================================================
    CSS Custom Properties - High Contrast Theme
    ========================================================================== */
 :root {
+  /* Color System */
   --text-primary: #000000;
   --text-secondary: #657786;
   --background-primary: #ffffff;
@@ -13,29 +14,52 @@
   --success-color: #17bf63;
   --warning-color: #ffad1f;
   --error-color: #e0245e;
+  
+  /* Typography System */
   --font-mono: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
   --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Spacing System */
+  --spacing-xs: 2px;
+  --spacing-sm: 4px;
+  --spacing-md: 8px;
+  --spacing-lg: 12px;
+  --spacing-xl: 16px;
+  
+  /* Performance Optimizations */
+  --will-change: scroll-position;
+  --contain: layout style paint;
+  --transform: translateZ(0);
 }
 
 /* ==========================================================================
-   Performance Optimizations
+   Performance Optimizations - Critical Path
    ========================================================================== */
+/* Disable animations globally for performance */
 * {
   animation: none !important;
   transition: none !important;
   transform: none !important;
 }
 
-/* Allow only essential transitions */
+/* Allow only essential transitions for user interaction */
 [data-testid="like"]:hover,
 [data-testid="retweet"]:hover,
 [data-testid="reply"]:hover {
   transition: background-color 0.1s ease !important;
 }
 
+/* Optimize scrolling performance */
+[data-testid="primaryColumn"] {
+  will-change: var(--will-change);
+  transform: var(--transform);
+  backface-visibility: hidden;
+}
+
 /* ==========================================================================
-   Main Feed Container Transformations
+   Layout System - Optimized Selectors
    ========================================================================== */
+/* Main Feed Container - High Performance */
 [data-testid="primaryColumn"] {
   max-width: none !important;
   width: 100% !important;
@@ -44,44 +68,38 @@
   background: var(--background-primary) !important;
 }
 
-/* Remove decorative backgrounds */
+/* Remove decorative backgrounds - Performance Critical */
 [data-testid="primaryColumn"] > div {
   background: none !important;
   box-shadow: none !important;
 }
 
-/* Optimize scrolling performance */
-[data-testid="primaryColumn"] {
-  will-change: scroll-position;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-
 /* ==========================================================================
-   Tweet Item Transformations - FIXED FOR OVERLAP ISSUES
+   Tweet System - Optimized for Performance
    ========================================================================== */
+/* Tweet Container - Optimized Layout */
 [data-testid="tweet"] {
-  padding: 8px 12px !important;
+  padding: var(--spacing-md) var(--spacing-lg) !important;
   margin: 0 !important;
   border-bottom: 1px solid var(--border-color) !important;
   background: transparent !important;
-  contain: layout style paint;
-  position: relative !important; /* Prevent overlap issues */
+  contain: var(--contain);
+  position: relative !important;
   z-index: 1 !important;
-  overflow: visible !important; /* Allow content to be visible */
+  overflow: visible !important;
 }
 
-/* Compact tweet layout - FIXED */
+/* Tweet Layout - CSS Grid for Performance */
 [data-testid="tweet"] article {
   display: grid !important;
   grid-template-columns: auto 1fr auto !important;
-  gap: 8px !important;
+  gap: var(--spacing-md) !important;
   align-items: start !important;
   position: relative !important;
   overflow: visible !important;
 }
 
-/* Remove excessive spacing */
+/* Tweet Content Optimization */
 [data-testid="tweet"] > div {
   padding: 0 !important;
   margin: 0 !important;
@@ -90,16 +108,16 @@
 }
 
 /* ==========================================================================
-   Typography Transformations - FIXED FOR OVERLAP
+   Typography System - Optimized Selectors
    ========================================================================== */
-/* Primary content - tweet text */
+/* Tweet Text - Primary Content */
 [data-testid="tweetText"] {
   font-family: var(--font-mono) !important;
   font-size: 14px !important;
   line-height: 1.4 !important;
   color: var(--text-primary) !important;
   font-weight: 400 !important;
-  margin: 4px 0 8px 0 !important;
+  margin: var(--spacing-sm) 0 var(--spacing-md) 0 !important;
   padding: 0 !important;
   display: block !important;
   overflow: visible !important;
@@ -112,13 +130,13 @@
   max-width: 100% !important;
 }
 
-/* Username and metadata - FIXED */
+/* Username - Optimized */
 [data-testid="User-Name"] {
   font-family: var(--font-mono) !important;
   font-size: 13px !important;
   font-weight: 600 !important;
   color: var(--text-primary) !important;
-  margin: 0 0 2px 0 !important;
+  margin: 0 0 var(--spacing-xs) 0 !important;
   padding: 0 !important;
   display: block !important;
   position: relative !important;
@@ -128,7 +146,7 @@
   text-overflow: ellipsis !important;
 }
 
-/* Timestamps and secondary info - FIXED */
+/* Timestamps and Screen Names - Optimized */
 time, [data-testid="UserScreenName"] {
   font-family: var(--font-mono) !important;
   font-size: 12px !important;
@@ -141,7 +159,7 @@ time, [data-testid="UserScreenName"] {
   overflow: visible !important;
 }
 
-/* Fix for missing UserScreenName selector - ADDED FALLBACKS */
+/* Fallback Selectors - Performance Optimized */
 [data-testid="UserScreenName"], 
 span[dir="ltr"]:has(span[dir="ltr"] span[dir="ltr"]),
 .css-1jxf684[dir="ltr"] {

@@ -191,3 +191,43 @@ This rule integrates with the error correction system:
 - Screenshots: `data/validation/feasibility/screenshots/`
 - Reports: `data/validation/feasibility/reports/`
 
+# Technical Feasibility Rules for UX Fixer Extensions
+
+## Purpose
+Prevent wasted effort on projects that are technically infeasible due to browser, CSP, or site restrictions. Ensure all critical technical risks are validated on the real target site before significant implementation, automation, or task planning.
+
+## Rules
+1. **Feasibility First:**
+   - No implementation, automation, or test framework work may begin until technical feasibility is proven on the real target site (not just on test pages).
+   - Feasibility must be demonstrated with a minimal working proof-of-concept (POC) that:
+     - Loads the extension on the real site
+     - Successfully injects and applies CSS/JS
+     - Modifies the DOM in a visible way
+     - Survives reloads and navigation events
+     - Is not blocked by CSP, site scripts, or browser restrictions
+2. **CSP and Script Execution:**
+   - Explicitly test for CSP restrictions, script execution, and DOM access on the real site as the first validation step.
+   - Document all CSP headers and any errors in the browser console.
+   - Attempt both file-based and direct JS/CSS injection.
+   - If any method is blocked, document the failure and escalate immediately.
+3. **Blocker Escalation:**
+   - If technical feasibility cannot be proven, the project must be paused and the issue escalated before any further work.
+   - No further implementation, automation, or planning is allowed until feasibility is resolved.
+4. **Task Planning:**
+   - All project plans, scratchpads, and task files must include a technical feasibility validation as the first step.
+   - No downstream tasks may be started until this step is marked complete.
+5. **Documentation:**
+   - All feasibility validation steps, results, and blockers must be documented in the project (in `tasks/human/validation/` and the scratchpad).
+   - If the project is found infeasible, document the reason and do not proceed with further work.
+
+## Enforcement
+- All new UX Fixer extension projects must follow these rules.
+- PRs and commits that skip feasibility validation or begin implementation before POC must be rejected.
+- Automated and manual reviews must check for a documented feasibility POC on the real target site.
+
+## Rationale
+- Prevents wasted effort on technically impossible projects
+- Surfaces critical blockers early
+- Ensures all work is grounded in real-world constraints
+- Saves time, resources, and developer frustration
+
